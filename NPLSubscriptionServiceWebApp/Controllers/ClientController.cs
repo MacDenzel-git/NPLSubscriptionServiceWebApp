@@ -88,8 +88,6 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
             return View(viewModel);
         }
-
-
         [HttpPost]
         public async Task<IActionResult> Create(ClientViewModel clientViewModel)
         {

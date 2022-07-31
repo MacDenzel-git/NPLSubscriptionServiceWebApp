@@ -9,10 +9,10 @@ using System.Net;
 
 namespace NPLSubscriptionServiceWebApp.Controllers
 {
-    public class ClientTypeController : Controller
+    public class RegionController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly string apiUrl = "ClientType";
+        private readonly string apiUrl = "Region";
         public string BaseUrl
         {
             get
@@ -20,20 +20,20 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 return _configuration["EndpointUrl"];
             }
         }
-        public ClientTypeController(IConfiguration configuration)
+        public RegionController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
         public async Task<IActionResult> Index(string message = "")
         {
-            ClientTypeViewModel clientTypeVm = new ClientTypeViewModel();
+            RegionViewModel viewModel = new RegionViewModel();
 
             try
             {
-                clientTypeVm.OutputHandler = new OutputHandler { IsErrorOccured = false };
+                viewModel.OutputHandler = new OutputHandler { IsErrorOccured = false };
                
-                //Get Payment Type through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllClientTypes";
+                //Get Client Type through API end Point
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllRegions";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -45,14 +45,14 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        clientTypeVm.ClientTypes = JsonConvert.DeserializeObject<IEnumerable<ClientTypeDTO>>(data);
+                        viewModel.Regions = JsonConvert.DeserializeObject<IEnumerable<RegionDTO>>(data);
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
                     {
                         //if the database doesn't have values, return message to user
-                        clientTypeVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
-                        return View(clientTypeVm);
+                        viewModel.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
+                        return View(viewModel);
                     }
 
                 };
@@ -62,15 +62,15 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 //in an event of an exception return General error
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
-                clientTypeVm.OutputHandler.Message = error.Message;
-                return View(clientTypeVm);
+                viewModel.OutputHandler.Message = error.Message;
+                return View(viewModel);
             }
             if (!String.IsNullOrEmpty(message))
             {
-                clientTypeVm.OutputHandler.Message = message;
+                viewModel.OutputHandler.Message = message;
 
             }
-            return View(clientTypeVm);
+            return View(viewModel);
 
         }
 
@@ -78,62 +78,65 @@ namespace NPLSubscriptionServiceWebApp.Controllers
         public async Task<IActionResult> Create()
         {
             //Populate dropDown List
-            var viewModel = new ClientTypeViewModel
+            var viewModel = new RegionViewModel
             {
-                OutputHandler = new OutputHandler { IsErrorOccured = false }
+                OutputHandler = new OutputHandler { IsErrorOccured = false },
+                Countries = await StaticDataHandler.GetCountries(BaseUrl)
             };
 
             return View(viewModel);
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> Create(ClientTypeViewModel clientTypeViewModel)
+        public async Task<IActionResult> Create(RegionViewModel regionViewModel)
         {
             OutputHandler result = new();
 
             //capture Created Date = the time this item was/is created
-            //clientTypeViewModel.ClientType.CreatedDate = DateTime.Now.AddHours(2);
-           // clientTypeViewModel.ClientType.CreatedBy = "SYSADMIN"; //add session user's Email
+            //regionViewModel.Region.CreatedDate = DateTime.Now.AddHours(2);
+           // regionViewModel.Region.CreatedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Create";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, clientTypeViewModel.ClientType);
+                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, regionViewModel.Region);
 
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "ClientType", new { message = result.Message });
+                    return RedirectToAction("Index", "Region", new { message = result.Message });
                 }
                 else
                 {
                     //an error has occured, prep the UI and send user message
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    clientTypeViewModel.OutputHandler = result;
-
+                    regionViewModel.OutputHandler = result;  
+                    
                     //populate the dropdown for reload
-                     return View(clientTypeViewModel);
+                    regionViewModel.Countries = await StaticDataHandler.GetCountries(BaseUrl);
+                     return View(regionViewModel);
                 }
             }
 
         }
         [HttpGet]
-        public async Task<IActionResult> Update(int clientTypeId)
+        public async Task<IActionResult> Update(int regionId)
         {
             //Setup Dropdown lists  
-            var clientTypeVm = new ClientTypeViewModel
+            var regionVm = new RegionViewModel
             {
-             
-                OutputHandler = new OutputHandler { IsErrorOccured = false }
+                Countries = await StaticDataHandler.GetCountries(BaseUrl),
+            OutputHandler = new OutputHandler { IsErrorOccured = false }
             };
             try
             {
-                //Get ClientType through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetClientType?ClientTypeId={clientTypeId}";
+                //Get Region through API end Point
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetRegion?RegionId={regionId}";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -145,15 +148,15 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        clientTypeVm.ClientType = JsonConvert.DeserializeObject<ClientTypeDTO>(data);
+                        regionVm.Region = JsonConvert.DeserializeObject<RegionDTO>(data);
                         
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
                     {
                         //if the database doesn't have values, return message to user
-                        clientTypeVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
-                        return View(clientTypeVm);
+                        regionVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
+                        return View(regionVm);
                     }
                 };
             }
@@ -162,35 +165,35 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 //in an event of an exception return General error
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
-                clientTypeVm.OutputHandler = new OutputHandler
+                regionVm.OutputHandler = new OutputHandler
                 {
                     IsErrorOccured = true,
                     Message = error.Message
                 };
             }
-            return View(clientTypeVm);
+            return View(regionVm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(ClientTypeViewModel clientTypeViewModel)
+        public async Task<IActionResult> Update(RegionViewModel regionViewModel)
         {
             OutputHandler result = new();
 
             //capture Modified Date = the time this item was modified/changed
-            //clientTypeViewModel.ClientType.ModifiedDate = DateTime.Now.AddHours(2);
-            //clientTypeViewModel.ClientType.ModifiedBy = "SYSADMIN"; //add session user's Email
+            regionViewModel.Region.ModifiedDate = DateTime.Now.AddHours(2);
+            regionViewModel.Region.ModifiedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Update";
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, clientTypeViewModel.ClientType);
+                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, regionViewModel.Region);
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "ClientType", new { message = result.Message });
+                    return RedirectToAction("Index", "Region", new { message = result.Message });
                 }
                 else
                 {
@@ -199,7 +202,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
                     if (result.Message == null)
                     {
-                        clientTypeViewModel.OutputHandler = new OutputHandler
+                        regionViewModel.OutputHandler = new OutputHandler
                         {
                             IsErrorOccured = true,
                             Message = StandardMessages.GetGeneralErrorMessage()
@@ -207,20 +210,20 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     }
                     else
                     {
-                        clientTypeViewModel.OutputHandler = result;
+                        regionViewModel.OutputHandler = result;
                     }
 
 
                     //populate the dropdown for reload
-                   
-                    return View(clientTypeViewModel);
+                    regionViewModel.Countries = await StaticDataHandler.GetCountries(BaseUrl),
+                    return View(regionViewModel);
                 }
             }
         }
         public async Task<IActionResult> Delete(int id)
         {
             OutputHandler resultHandler = new();
-            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?clientTypeId={id}";
+            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?regionId={id}";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
