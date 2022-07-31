@@ -7,6 +7,7 @@ namespace NPLSubscriptionServiceWebApp.Models.ViewModels
     {
         public RegionDTO Region { get; set; }
         public IEnumerable<RegionDTO> Regions { get; set; }
+        public IEnumerable<CountryDTO> Countries { get; set; }
         public OutputHandler OutputHandler { get; set; }
     }
 }
