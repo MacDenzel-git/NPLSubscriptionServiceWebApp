@@ -1,0 +1,73 @@
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.ClientViewModel
+
+@{
+    ViewData["Title"] = "Clients";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-plain">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title mt-0">Clients</h4>
+                        <p class="card-category">Below is a list of all Clients. Click on the details Icon for more information</p>
+                        <div class="row">
+                            <div class="col-12 text-right">
+                                <a asp-action="Create" class="btn btn-sm btn-simple btn-outline-info m-2 animation-on-hover"><i class="tim-icons icon-simple-add"></i> Add New</a>
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.OutputHandler.IsErrorOccured)
+                    {
+                        <h4 class="text-danger font-weight-bold p-3">@Model.OutputHandler.Message</h4>
+                    }
+                    else if (Model.OutputHandler.Message != null)
+                    {
+                        <h4 class="text-success font-weight-bold p-3">@Model.OutputHandler.Message</h4>
+                    }
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="dtBasicExample" class="table table-hover dataTable">
+                                <thead class="font-weight-bold text-primary">
+                                    <tr>
+                                        <th>Clients Name</th>
+                                        <th>Location</th>
+                                        <th>Phone Number</th>
+                                        <th>Client Type</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Clients.ToList().OrderBy(item => item.ClientName))
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItme => item.ClientName)</td>
+                                            <td>@Html.DisplayFor(modelItme => item.Location)</td>
+                                            <td>@Html.DisplayFor(modelItme => item.PhoneNumber)</td>
+                                            <td>@Html.DisplayFor(modelItme => item.ClientTypeId)</td>
+
+                                            <td class="td-actions text-right">
+                                                <a class="btn btn-info animation-on-hover btn-fab btn-icon btn-round"
+                                               type="button" rel="tooltip" data-toggle="tooltip" data-placement="top"
+                                               title="update file type" asp-action="Update" asp-route-clientId="@item.ClientId">
+                                                    <i class="material-icons">update</i>
+                                                </a>
+                                                |
+                                                <a class="btn btn-info animation-on-hover btn-fab btn-icon btn-round"
+                                               type="button" rel="tooltip" data-toggle="tooltip"
+                                               data-placement="bottom" title="delete file type" onclick="ConfirmFunction(@item.ClientId)">
+                                                    <i class="material-icons">delete</i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

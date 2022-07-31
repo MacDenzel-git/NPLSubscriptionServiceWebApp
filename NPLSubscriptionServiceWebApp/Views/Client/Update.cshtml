@@ -1,0 +1,101 @@
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.ClientViewModel
+@{
+    ViewData["Title"] = "Update";
+}
+<nav aria-label="breadcrumb" role="navigation">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Home</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Client</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Update</li>
+    </ol>
+</nav>
+
+<h1>Update</h1>
+
+<div class="card">
+    <div class="card-header">
+
+        <div class="row">
+            <div class="col-12 text-right">
+                <a asp-action="Index" class="btn btn-sm btn-simple m-2 animation-on-hover">  <i class="tim-icons icon-bullet-list-67"></i> Back</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.OutputHandler.IsErrorOccured)
+        {
+            <h4 class="text-danger font-weight-bold p-3">@Model.OutputHandler.Message</h4>
+        }
+        else if (Model.OutputHandler.Message != null)
+        {
+            <h4 class="text-success font-weight-bold p-3">@Model.OutputHandler.Message</h4>
+        }
+        <form asp-action="Update" method="post" >
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-row ">
+                    <input asp-for="@Model.Client.DistrictId" hidden />
+                    <input asp-for="@Model.Client.ClientTypeId" hidden />
+                    <input asp-for="@Model.Client.RegionId" hidden />
+                    <input asp-for="@Model.Client.ClientId" hidden />
+                    <input asp-for="@Model.Client.CreatedBy" hidden />
+                    <input asp-for="@Model.Client.CreatedDate" hidden />
+                    <input asp-for="@Model.Client.OldEmail" hidden />
+                <div class="form-group col-md-4">
+                    <label>Client Type</label>
+                    <div class="input-group">
+                        <select class="form-control form-control-sm" required asp-for="@Model.Client.ClientTypeId"
+                                asp-items="@(new SelectList(Model.ClientTypes, "ClientTypeId", "Description") )"></select>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Region</label>
+                    <div class="input-group">
+                        <select class="form-control form-control-sm" required asp-for="@Model.Client.RegionId"
+                                asp-items="@(new SelectList(Model.Regions, "RegionId", "RegionName") )"></select>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>District/State </label>
+                    <div class="input-group">
+                        <select class="form-control form-control-sm" required asp-for="@Model.Client.DistrictId"
+                                asp-items="@(new SelectList(Model.Districts, "DistrictId", "DistrictName") )"></select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-row ">
+                <div class="form-group col-md-4">
+                    <label>Client Name</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" asp-for="@Model.Client.ClientName" placeholder="Enter Client Name" required>
+                        <span asp-validation-for="@Model.Client.ClientName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Location/Physical Address</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" asp-for="@Model.Client.Location" placeholder="Enter Physical Address">
+                        <span asp-validation-for="@Model.Client.Location" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Phone Number</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" asp-for="@Model.Client.PhoneNumber" placeholder="Enter Phone Number" required>
+                        <span asp-validation-for="@Model.Client.PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Email</label>
+                    <div class="input-group">
+                        <input type="email" class="form-control" asp-for="@Model.Client.Email" placeholder="Enter Phone Number" required>
+                        <span asp-validation-for="@Model.Client.Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
