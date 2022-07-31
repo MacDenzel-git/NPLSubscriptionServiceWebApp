@@ -82,7 +82,7 @@ namespace NPLSubscriptionServiceWebApp.Models.General
             return districts;
         }
 
-        public static async Task<IEnumerable<PaymentTypeDTO>> GetPaymentType(string baseUrl)
+        public static async Task<IEnumerable<PaymentTypeDTO>> GetPaymentTypes(string baseUrl)
         {
             var requestUrl = $"{baseUrl}PaymentType/GetAllPaymentTypes";
             IEnumerable<PaymentTypeDTO> districts = new List<PaymentTypeDTO>();
@@ -134,6 +134,22 @@ namespace NPLSubscriptionServiceWebApp.Models.General
             return regions;
         }
 
+        public static async Task<IEnumerable<CountryDTO>> GetCountries(string baseUrl)
+        {
+            var requestUrl = $"{baseUrl}Country/GetAllCountries";
+            IEnumerable<CountryDTO> regions = new List<CountryDTO>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(requestUrl);
+                HttpResponseMessage responseMessage = await client.GetAsync(requestUrl);
+                if (responseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    string data = await responseMessage.Content.ReadAsStringAsync();
+                    regions = JsonConvert.DeserializeObject<IEnumerable<CountryDTO>>(data);
+                }
+            }
+            return regions;
+        }
         public static async Task<IEnumerable<SubscriptionTypeDTO>> GetSubscriptionType(string baseUrl)
         {
             var requestUrl = $"{baseUrl}SubscriptionType/GetAllSubscriptionTypes";
