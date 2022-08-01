@@ -1,4 +1,4 @@
-﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.ClientTypeViewModel
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.PaymentTypeViewModel
 @{
     ViewData["Title"] = "Update";
 }
@@ -34,21 +34,20 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-row ">
 
-                <input asp-for="@Model.ClientType.ClientTypeId" hidden />
-                 <input asp-for="@Model.ClientType.CreatedBy" hidden />
-                    <input asp-for="@Model.ClientType.CreatedDate" hidden />
-                <div class="form-group col-md-4">
-                    <label>Client Type Description</label>
+                <input asp-for="@Model.PaymentType.PaymentTypeId" hidden />
+
+               <div class="form-group col-md-4">
+                    <label>Payment Type Description</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" asp-for="@Model.ClientType.Description" placeholder="Enter Client Name" required>
-                        <span asp-validation-for="@Model.ClientType.Description" class="text-danger"></span>
+                        <input type="text" class="form-control" asp-for="@Model.PaymentType.Description" placeholder="Enter Payment Description" required>
+                        <span asp-validation-for="@Model.PaymentType.Description" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group col-md-4">
-                    <label>Active </label>
+                    <label>Account Number</label>
                     <div class="input-group">
-                        <input class="form-check-input" asp-for="ClientType.IsActive" /> @Html.DisplayNameFor(model => model.ClientType.IsActive)
-
+                        <input type="number" class="form-control" asp-for="@Model.PaymentType.AccountNumber" placeholder="Enter Account Number" required>
+                        <span asp-validation-for="@Model.PaymentType.AccountNumber" class="text-danger"></span>
                     </div>
                 </div>
 

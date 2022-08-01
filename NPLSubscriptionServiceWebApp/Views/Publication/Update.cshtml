@@ -1,11 +1,11 @@
-﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.ClientTypeViewModel
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.PublicationViewModel
 @{
     ViewData["Title"] = "Update";
 }
 <nav aria-label="breadcrumb" role="navigation">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Home</a></li>
-        <li class="breadcrumb-item"><a asp-action="Index">Client Type</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Publication</a></li>
         <li class="breadcrumb-item active" aria-current="page">Update</li>
     </ol>
 </nav>
@@ -33,25 +33,22 @@
         <form asp-action="Update" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-row ">
-
-                <input asp-for="@Model.ClientType.ClientTypeId" hidden />
-                 <input asp-for="@Model.ClientType.CreatedBy" hidden />
-                    <input asp-for="@Model.ClientType.CreatedDate" hidden />
-                <div class="form-group col-md-4">
-                    <label>Client Type Description</label>
+                 <input asp-for="@Model.Publication.CreatedBy" hidden />
+                    <input asp-for="@Model.Publication.CreatedDate" hidden />
+                <input asp-for="@Model.Publication.PublicationId" hidden />
+                 <div class="form-group col-md-4">
+                    <label>Publication Title</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" asp-for="@Model.ClientType.Description" placeholder="Enter Client Name" required>
-                        <span asp-validation-for="@Model.ClientType.Description" class="text-danger"></span>
+                        <input type="text" class="form-control" asp-for="@Model.Publication.PublicationTitle" placeholder="Enter Subscription Title" required>
+                        <span asp-validation-for="@Model.Publication.PublicationTitle" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group col-md-4">
-                    <label>Active </label>
+                    <label> Tick the box to activate or deactivate publications </label>
                     <div class="input-group">
-                        <input class="form-check-input" asp-for="ClientType.IsActive" /> @Html.DisplayNameFor(model => model.ClientType.IsActive)
-
+                        <input class="form-check-input" asp-for="Publication.IsActive" />
                     </div>
                 </div>
-
 
             </div>
 

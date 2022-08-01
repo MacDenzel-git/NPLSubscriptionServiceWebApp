@@ -1,0 +1,112 @@
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.SubscriptionViewModel
+@{
+    ViewData["Title"] = "Update";
+}
+<nav aria-label="breadcrumb" role="navigation">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Home</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Subscription</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Update</li>
+    </ol>
+</nav>
+
+<h1>Update</h1>
+
+<div class="card">
+    <div class="card-header">
+
+        <div class="row">
+            <div class="col-12 text-right">
+                <a asp-action="Index" class="btn btn-sm btn-simple m-2 animation-on-hover">  <i class="tim-icons icon-bullet-list-67"></i> Back</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.OutputHandler.IsErrorOccured)
+        {
+            <h4 class="text-danger font-weight-bold p-3">@Model.OutputHandler.Message</h4>
+        }
+        else if (Model.OutputHandler.Message != null)
+        {
+            <h4 class="text-success font-weight-bold p-3">@Model.OutputHandler.Message</h4>
+        }
+        <form asp-action="Update" method="post" >
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div> 
+                    <input asp-for="@Model.Subscription.SubscriptionId" hidden />
+                    <input asp-for="@Model.Subscription.SubscriptionTypeId" hidden />
+                    <input asp-for="@Model.Subscription.SubscriptionStatusId" hidden />
+                    <input asp-for="@Model.Subscription.PromotionId" hidden />
+                    <input asp-for="@Model.Subscription.PublicationId" hidden />
+                    <input asp-for="@Model.Subscription.TypeOfDeliveryId" hidden />
+                    <input asp-for="@Model.Subscription.CreatedBy" hidden />
+                    <input asp-for="@Model.Subscription.CreatedDate" hidden />
+        <div class="form-row ">
+                <div class="form-group col-md-4">
+                    <label>Client</label>
+                    <div class="input-group">
+                        <select class="form-control form-control-sm" required asp-for="@Model.Subscription.ClientId"
+                                asp-items="@(new SelectList(Model.Clients, "ClientId", "ClientName") )"></select>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Subscription Type</label>
+                    <div class="input-group">
+                        <select class="form-control form-control-sm" required asp-for="@Model.Subscription.SubscriptionTypeId"
+                                asp-items="@(new SelectList(Model.SubscriptionTypes, "SubscriptionTypeId", "SubscriptionTypeDescription") )"></select>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Subscription Status </label>
+                    <div class="input-group">
+                        <select class="form-control form-control-sm" required asp-for="@Model.Subscription.SubscriptionStatusId"
+                                asp-items="@(new SelectList(Model.SubscriptionStatuses, "SubscriptionStatusId", "SubscriptionStatusDescription") )"></select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-row ">
+                <div class="form-group col-md-4">
+                    <label>Promotion Code</label>
+                    <div class="input-group">
+                        <select class="form-control form-control-sm" required asp-for="@Model.Subscription.PromotionId"
+                                asp-items="@(new SelectList(Model.Promotions, "Promotion", "PromotionCode") )"></select>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Publication</label>
+                    <div class="input-group">
+                        <select class="form-control form-control-sm" required asp-for="@Model.Subscription.PublicationId"
+                                asp-items="@(new SelectList(Model.Publications, "PublicationId", "PublicationTitle") )"></select>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Method of Delivery</label>
+                    <div class="input-group">
+                        <select class="form-control form-control-sm" required asp-for="@Model.Subscription.PublicationId"
+                                asp-items="@(new SelectList(Model.TypeOfDeliveries, "TypesOfDeliveryId", "TypeOfDeliveryDescription") )"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row ">
+                <div class="form-group col-md-4">
+                    <label>Start Date for Subscription</label>
+                    <div class="input-group">
+                        <input type="datetime" class="form-control" asp-for="@Model.Subscription.DateOfSubscription" placeholder="Enter Client Name" required>
+                        <span asp-validation-for="@Model.Subscription.DateOfSubscription" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Number Of Copies</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" asp-for="@Model.Subscription.NumberOfCopies" placeholder="Enter Number of Copies">
+                        <span asp-validation-for="@Model.Subscription.NumberOfCopies" class="text-danger"></span>
+                    </div>
+                </div>
+                
+
+
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>

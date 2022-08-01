@@ -25,7 +25,7 @@ namespace NPLSubscriptionServiceWebApp.Models.General
 
         public static async Task<IEnumerable<ClientDTO>> GetClients(string baseUrl)
         {
-            var requestUrl = $"{baseUrl}ClientType/GetAllClients";
+            var requestUrl = $"{baseUrl}Client/GetAllClients";
             IEnumerable<ClientDTO> clients = new List<ClientDTO>();
             using (var client = new HttpClient())
             {
@@ -85,7 +85,7 @@ namespace NPLSubscriptionServiceWebApp.Models.General
         public static async Task<IEnumerable<PaymentTypeDTO>> GetPaymentTypes(string baseUrl)
         {
             var requestUrl = $"{baseUrl}PaymentType/GetAllPaymentTypes";
-            IEnumerable<PaymentTypeDTO> districts = new List<PaymentTypeDTO>();
+            IEnumerable<PaymentTypeDTO> paymentTypes = new List<PaymentTypeDTO>();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
@@ -93,10 +93,10 @@ namespace NPLSubscriptionServiceWebApp.Models.General
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     string data = await responseMessage.Content.ReadAsStringAsync();
-                    districts = JsonConvert.DeserializeObject<IEnumerable<PaymentTypeDTO>>(data);
+                    paymentTypes = JsonConvert.DeserializeObject<IEnumerable<PaymentTypeDTO>>(data);
                 }
             }
-            return districts;
+            return paymentTypes;
         }
 
 
@@ -112,6 +112,40 @@ namespace NPLSubscriptionServiceWebApp.Models.General
                 {
                     string data = await responseMessage.Content.ReadAsStringAsync();
                     promotions = JsonConvert.DeserializeObject<IEnumerable<PromotionDTO>>(data);
+                }
+            }
+            return promotions;
+        } 
+        
+        public static async Task<IEnumerable<PublicationDTO>> GetPublications(string baseUrl)
+        {
+            var requestUrl = $"{baseUrl}Publication/GetAllPublications";
+            IEnumerable<PublicationDTO> promotions = new List<PublicationDTO>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(requestUrl);
+                HttpResponseMessage responseMessage = await client.GetAsync(requestUrl);
+                if (responseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    string data = await responseMessage.Content.ReadAsStringAsync();
+                    promotions = JsonConvert.DeserializeObject<IEnumerable<PublicationDTO>>(data);
+                }
+            }
+            return promotions;
+        }
+
+        public static async Task<IEnumerable<TypeOfDeliveryDTO>> GetTypesOfDelivery(string baseUrl)
+        {
+            var requestUrl = $"{baseUrl}TypeOfDelivery/GetAllTypeOfDeliveries";
+            IEnumerable<TypeOfDeliveryDTO> promotions = new List<TypeOfDeliveryDTO>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(requestUrl);
+                HttpResponseMessage responseMessage = await client.GetAsync(requestUrl);
+                if (responseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    string data = await responseMessage.Content.ReadAsStringAsync();
+                    promotions = JsonConvert.DeserializeObject<IEnumerable<TypeOfDeliveryDTO>>(data);
                 }
             }
             return promotions;
@@ -150,7 +184,7 @@ namespace NPLSubscriptionServiceWebApp.Models.General
             }
             return regions;
         }
-        public static async Task<IEnumerable<SubscriptionTypeDTO>> GetSubscriptionType(string baseUrl)
+        public static async Task<IEnumerable<SubscriptionTypeDTO>> GetSubscriptionTypes(string baseUrl)
         {
             var requestUrl = $"{baseUrl}SubscriptionType/GetAllSubscriptionTypes";
             IEnumerable<SubscriptionTypeDTO> subscriptionTypes = new List<SubscriptionTypeDTO>();
@@ -167,7 +201,7 @@ namespace NPLSubscriptionServiceWebApp.Models.General
             return subscriptionTypes;
         }
 
-        public static async Task<IEnumerable<SubscriptionStatusDTO>> GetSubscriptionStatus(string baseUrl)
+        public static async Task<IEnumerable<SubscriptionStatusDTO>> GetSubscriptionStatuses(string baseUrl)
         {
             var requestUrl = $"{baseUrl}SubscriptionStatus/GetAllSubscriptionStatuses";
             IEnumerable<SubscriptionStatusDTO> subscriptionStatus = new List<SubscriptionStatusDTO>();

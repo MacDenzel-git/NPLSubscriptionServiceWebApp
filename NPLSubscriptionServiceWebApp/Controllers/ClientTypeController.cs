@@ -63,6 +63,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
                 clientTypeVm.OutputHandler.Message = error.Message;
+                clientTypeVm.OutputHandler.IsErrorOccured = true;
+
                 return View(clientTypeVm);
             }
             if (!String.IsNullOrEmpty(message))
@@ -92,8 +94,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             OutputHandler result = new();
 
             //capture Created Date = the time this item was/is created
-            //clientTypeViewModel.ClientType.CreatedDate = DateTime.Now.AddHours(2);
-           // clientTypeViewModel.ClientType.CreatedBy = "SYSADMIN"; //add session user's Email
+            clientTypeViewModel.ClientType.CreatedDate = DateTime.Now.AddHours(2);
+            clientTypeViewModel.ClientType.CreatedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Create";
             using (var client = new HttpClient())
@@ -177,8 +179,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             OutputHandler result = new();
 
             //capture Modified Date = the time this item was modified/changed
-            //clientTypeViewModel.ClientType.ModifiedDate = DateTime.Now.AddHours(2);
-            //clientTypeViewModel.ClientType.ModifiedBy = "SYSADMIN"; //add session user's Email
+            clientTypeViewModel.ClientType.ModifiedDate = DateTime.Now.AddHours(2);
+            clientTypeViewModel.ClientType.ModifiedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Update";
 

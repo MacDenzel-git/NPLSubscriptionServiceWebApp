@@ -1,13 +1,13 @@
 ﻿using NPLDataAccessLayer.DataTransferObjects;
+using NPLDataAccessLayer.Models;
 using NPLReusableResourcesPackage.General;
 
 namespace NPLSubscriptionServiceWebApp.Models.ViewModels
 {
-    public class SubscriptionTypeViewModel
+    public class PublicationViewModel
     {
         public OutputHandler OutputHandler { get; set; }
-        public SubscriptionTypeDTO SubscriptionType { get; set; }
-        public IEnumerable<SubscriptionTypeDTO> SubscriptionTypes { get; set; }
-
+        public PublicationDTO Publication { get; set; }
+        public IEnumerable<PublicationDTO> Publications { get; set; }
     }
 }

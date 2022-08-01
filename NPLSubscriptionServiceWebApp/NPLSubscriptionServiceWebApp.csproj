@@ -1,10 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Payment\Update.cshtml" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="wwwroot\js\site.js" />
@@ -55,7 +59,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NPLDataAccessLayer" Version="1.0.0.6" />
+    <PackageReference Include="NPLDataAccessLayer" Version="1.1.5" />
     <PackageReference Include="NPLReusableResourcesPackage" Version="1.0.0" />
   </ItemGroup>
 

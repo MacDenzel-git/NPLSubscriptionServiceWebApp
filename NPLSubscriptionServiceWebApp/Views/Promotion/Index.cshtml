@@ -1,7 +1,7 @@
-﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.ClientTypeViewModel
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.PromotionViewModel
 
 @{
-    ViewData["Title"] = "Client Types";
+    ViewData["Title"] = "Promotion";
 }
 
 <div class="content">
@@ -10,8 +10,8 @@
             <div class="col-md-12">
                 <div class="card card-plain">
                     <div class="card-header card-header-primary">
-                        <h4 class="card-title mt-0">Clients</h4>
-                        <p class="card-category">Below is a list of all Client Types. CClick on the update Icon for more information</p>
+                        <h4 class="card-title mt-0">Promotions</h4>
+                        <p class="card-category">Below is a list of all Promotion Records. Click on the update Icon for more information</p>
                         <div class="row">
                             <div class="col-12 text-right">
                                 <a asp-action="Create" class="btn btn-sm btn-simple btn-outline-info m-2 animation-on-hover"><i class="tim-icons icon-simple-add"></i> Add New</a>
@@ -31,39 +31,31 @@
                             <table id="dtBasicExample" class="table table-hover dataTable">
                                 <thead class="font-weight-bold text-primary">
                                     <tr>
-                                        <th>Client Type Description</th>
-                                        <th>Is Active</th>
+                                        <th>Promotion Code</th>
+                                        <th>Discount Percentage</th>
                                     
                                         <th class="text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                       @if (Model.ClientTypes != null)
+                                       @if (Model.Promotions != null)
                                     {
-                                        @foreach (var item in Model.ClientTypes.ToList().OrderBy(item => item.Description))
+                                        @foreach (var item in Model.Promotions.ToList().OrderBy(item => item.PromotionId))
                                         {
                                             <tr>
-                                                <td>@Html.DisplayFor(modelItme => item.Description)</td>
-                                                @if (item.IsActive)
-                                                {
-                                                    <td>Yes</td>
-                                                }
-                                                else
-                                                {
-                                                    <td>No</td>
-                                                }
-
-
+                                                <td>@Html.DisplayFor(modelItme => item.PromotionCode)</td>
+                                                <td>@Html.DisplayFor(modelItme => item.DiscountPercentage)</td>
+                                                
                                                 <td class="td-actions text-right">
                                                     <a class="btn btn-info animation-on-hover btn-fab btn-icon btn-round"
                                                type="button" rel="tooltip" data-toggle="tooltip" data-placement="top"
-                                               title="update file type" asp-action="Update" asp-route-clientTypeId="@item.ClientTypeId">
+                                               title="update file type" asp-action="Update" asp-route-promotionId="@item.PromotionId">
                                                         <i class="material-icons">update</i>
                                                     </a>
                                                     |
                                                     <a class="btn btn-info animation-on-hover btn-fab btn-icon btn-round"
                                                type="button" rel="tooltip" data-toggle="tooltip"
-                                               data-placement="bottom" title="delete file type" onclick="ConfirmFunction(@item.ClientTypeId)">
+                                               data-placement="bottom" title="delete file type" onclick="ConfirmFunction(@item.PromotionId)">
                                                         <i class="material-icons">delete</i>
                                                     </a>
                                                 </td>

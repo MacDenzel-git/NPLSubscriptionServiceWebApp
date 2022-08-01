@@ -9,10 +9,10 @@ using System.Net;
 
 namespace NPLSubscriptionServiceWebApp.Controllers
 {
-    public class PromotionController : Controller
+    public class PublicationController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly string apiUrl = "Promotion";
+        private readonly string apiUrl = "Publication";
         public string BaseUrl
         {
             get
@@ -20,20 +20,20 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 return _configuration["EndpointUrl"];
             }
         }
-        public PromotionController(IConfiguration configuration)
+        public PublicationController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
         public async Task<IActionResult> Index(string message = "")
         {
-            PromotionViewModel viewModel = new PromotionViewModel();
+            PublicationViewModel viewModel = new PublicationViewModel();
 
             try
             {
                 viewModel.OutputHandler = new OutputHandler { IsErrorOccured = false };
                
                 //Get Client Type through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllPromotions";
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllPublications";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -45,7 +45,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        viewModel.Promotions = JsonConvert.DeserializeObject<IEnumerable<PromotionDTO>>(data);
+                        viewModel.Publications = JsonConvert.DeserializeObject<IEnumerable<PublicationDTO>>(data);
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -64,7 +64,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
                 viewModel.OutputHandler.Message = error.Message;
                 viewModel.OutputHandler.IsErrorOccured = true;
-
+                
                 return View(viewModel);
             }
             if (!String.IsNullOrEmpty(message))
@@ -80,7 +80,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
         public async Task<IActionResult> Create()
         {
             //Populate dropDown List
-            var viewModel = new PromotionViewModel
+            var viewModel = new PublicationViewModel
             {
                 OutputHandler = new OutputHandler { IsErrorOccured = false }
             };
@@ -90,53 +90,53 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(PromotionViewModel promotionViewModel)
+        public async Task<IActionResult> Create(PublicationViewModel publicationViewModel)
         {
             OutputHandler result = new();
 
             //capture Created Date = the time this item was/is created
-            promotionViewModel.Promotion.CreatedDate = DateTime.Now.AddHours(2);
-            promotionViewModel.Promotion.CreatedBy = "SYSADMIN"; //add session user's Email
+            publicationViewModel.Publication.CreatedDate = DateTime.Now.AddHours(2);
+            publicationViewModel.Publication.CreatedBy = "SYSADMIN"; //TODO add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Create";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, promotionViewModel.Promotion);
+                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, publicationViewModel.Publication);
 
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "Promotion", new { message = result.Message });
+                    return RedirectToAction("Index", "Publication", new { message = result.Message });
                 }
                 else
                 {
                     //an error has occured, prep the UI and send user message
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    promotionViewModel.OutputHandler = result;
+                    publicationViewModel.OutputHandler = result;
 
                     //populate the dropdown for reload
-                     return View(promotionViewModel);
+                     return View(publicationViewModel);
                 }
             }
 
         }
         [HttpGet]
-        public async Task<IActionResult> Update(int promotionId)
+        public async Task<IActionResult> Update(int publicationId)
         {
             //Setup Dropdown lists  
-            var promotionVm = new PromotionViewModel
+            var clientTypeVm = new PublicationViewModel
             {
              
                 OutputHandler = new OutputHandler { IsErrorOccured = false }
             };
             try
             {
-                //Get Promotion through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetPromotion?PromotionId={promotionId}";
+                //Get Publication through API end Point
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetPublication?PublicationId={publicationId}";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -148,15 +148,15 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        promotionVm.Promotion = JsonConvert.DeserializeObject<PromotionDTO>(data);
+                        clientTypeVm.Publication = JsonConvert.DeserializeObject<PublicationDTO>(data);
                         
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
                     {
                         //if the database doesn't have values, return message to user
-                        promotionVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
-                        return View(promotionVm);
+                        clientTypeVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
+                        return View(clientTypeVm);
                     }
                 };
             }
@@ -165,35 +165,35 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 //in an event of an exception return General error
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
-                promotionVm.OutputHandler = new OutputHandler
+                clientTypeVm.OutputHandler = new OutputHandler
                 {
                     IsErrorOccured = true,
                     Message = error.Message
                 };
             }
-            return View(promotionVm);
+            return View(clientTypeVm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(PromotionViewModel promotionViewModel)
+        public async Task<IActionResult> Update(PublicationViewModel publicationViewModel)
         {
             OutputHandler result = new();
 
             //capture Modified Date = the time this item was modified/changed
-            promotionViewModel.Promotion.ModifiedDate = DateTime.Now.AddHours(2);
-            promotionViewModel.Promotion.ModifiedBy = "SYSADMIN"; //add session user's Email
+            publicationViewModel.Publication.ModifiedDate = DateTime.Now.AddHours(2);
+            publicationViewModel.Publication.ModifiedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Update";
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, promotionViewModel.Promotion);
+                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, publicationViewModel.Publication);
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "Promotion", new { message = result.Message });
+                    return RedirectToAction("Index", "Publication", new { message = result.Message });
                 }
                 else
                 {
@@ -202,7 +202,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
                     if (result.Message == null)
                     {
-                        promotionViewModel.OutputHandler = new OutputHandler
+                        publicationViewModel.OutputHandler = new OutputHandler
                         {
                             IsErrorOccured = true,
                             Message = StandardMessages.GetGeneralErrorMessage()
@@ -210,20 +210,20 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     }
                     else
                     {
-                        promotionViewModel.OutputHandler = result;
+                        publicationViewModel.OutputHandler = result;
                     }
 
 
                     //populate the dropdown for reload
                    
-                    return View(promotionViewModel);
+                    return View(publicationViewModel);
                 }
             }
         }
         public async Task<IActionResult> Delete(int id)
         {
             OutputHandler resultHandler = new();
-            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?promotionId={id}";
+            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?publicationId={id}";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);

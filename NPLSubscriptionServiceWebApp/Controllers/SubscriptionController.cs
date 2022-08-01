@@ -31,7 +31,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             try
             {
                 viewModel.OutputHandler = new OutputHandler { IsErrorOccured = false };
-               
+
                 //Get Client Type through API end Point
                 var requestUrl = $"{BaseUrl}{apiUrl}/GetAllSubscriptions";
                 using (var client = new HttpClient())
@@ -63,6 +63,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
                 viewModel.OutputHandler.Message = error.Message;
+                viewModel.OutputHandler.IsErrorOccured = true;
+
                 return View(viewModel);
             }
             if (!String.IsNullOrEmpty(message))
@@ -80,7 +82,15 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             //Populate dropDown List
             var viewModel = new SubscriptionViewModel
             {
-                OutputHandler = new OutputHandler { IsErrorOccured = false }
+                OutputHandler = new OutputHandler { IsErrorOccured = false },
+                Clients = await StaticDataHandler.GetClients(BaseUrl),
+                Promotions = await StaticDataHandler.GetPromotions(BaseUrl),
+                SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl),
+                SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl),
+                Publications = await StaticDataHandler.GetPublications(BaseUrl),
+                TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl),
+                ClientPaymentRecords = await StaticDataHandler.GetPayments(BaseUrl), //TODO filter by user
+
             };
 
             return View(viewModel);
@@ -93,8 +103,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             OutputHandler result = new();
 
             //capture Created Date = the time this item was/is created
-            //subscriptionViewModel.Subscription.CreatedDate = DateTime.Now.AddHours(2);
-           // subscriptionViewModel.Subscription.CreatedBy = "SYSADMIN"; //add session user's Email
+            subscriptionViewModel.Subscription.CreatedDate = DateTime.Now.AddHours(2);
+            subscriptionViewModel.Subscription.CreatedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Create";
             using (var client = new HttpClient())
@@ -115,6 +125,13 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
                     subscriptionViewModel.OutputHandler = result;
+                    subscriptionViewModel.Clients = await StaticDataHandler.GetClients(BaseUrl);
+                    subscriptionViewModel.Promotions = await StaticDataHandler.GetPromotions(BaseUrl);
+                    subscriptionViewModel.SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl);
+                    subscriptionViewModel.SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl);
+                    subscriptionViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
+                    subscriptionViewModel.TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl);
+                    subscriptionViewModel.ClientPaymentRecords = await StaticDataHandler.GetPayments(BaseUrl); //TODO filter by user
 
                     //populate the dropdown for reload
                      return View(subscriptionViewModel);
@@ -128,7 +145,14 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             //Setup Dropdown lists  
             var subscriptionVm = new SubscriptionViewModel
             {
-             
+                Clients = await StaticDataHandler.GetClients(BaseUrl),
+                Promotions = await StaticDataHandler.GetPromotions(BaseUrl),
+                SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl),
+                SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl),
+                Publications = await StaticDataHandler.GetPublications(BaseUrl),
+                TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl),
+                ClientPaymentRecords = await StaticDataHandler.GetPayments(BaseUrl), //TODO filter by user
+
                 OutputHandler = new OutputHandler { IsErrorOccured = false }
             };
             try
@@ -147,7 +171,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
                         //Json to DTO convertion using Newtonsoft.Json
                         subscriptionVm.Subscription = JsonConvert.DeserializeObject<SubscriptionDTO>(data);
-                        
+
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -178,8 +202,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             OutputHandler result = new();
 
             //capture Modified Date = the time this item was modified/changed
-            //subscriptionViewModel.Subscription.ModifiedDate = DateTime.Now.AddHours(2);
-            //subscriptionViewModel.Subscription.ModifiedBy = "SYSADMIN"; //add session user's Email
+            subscriptionViewModel.Subscription.ModifiedDate = DateTime.Now.AddHours(2);
+            subscriptionViewModel.Subscription.ModifiedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Update";
 
@@ -213,7 +237,14 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
 
                     //populate the dropdown for reload
-                   
+                    subscriptionViewModel.Clients = await StaticDataHandler.GetClients(BaseUrl);
+                    subscriptionViewModel.Promotions = await StaticDataHandler.GetPromotions(BaseUrl);
+                    subscriptionViewModel.SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl);
+                    subscriptionViewModel.SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl);
+                    subscriptionViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
+                    subscriptionViewModel.TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl);
+                    subscriptionViewModel.ClientPaymentRecords = await StaticDataHandler.GetPayments(BaseUrl); //TODO filter by user
+
                     return View(subscriptionViewModel);
                 }
             }
@@ -241,6 +272,50 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 }
             }
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SelfSubscription(SubscriptionViewModel subscriptionViewModel)
+        {
+            OutputHandler result = new();
+
+            //capture Created Date = the time this item was/is created
+            subscriptionViewModel.Subscription.CreatedDate = DateTime.Now.AddHours(2);
+            subscriptionViewModel.Subscription.CreatedBy = "SYSADMIN"; //add session user's Email
+            subscriptionViewModel.Subscription.
+
+            var requestUrl = $"{BaseUrl}{apiUrl}/Create";
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(requestUrl);
+                client.BaseAddress = new Uri(requestUrl);
+                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, subscriptionViewModel.Subscription);
+
+                if (responseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    var data = await responseMessage.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<OutputHandler>(data);
+                    return RedirectToAction("Index", "Subscription", new { message = result.Message });
+                }
+                else
+                {
+                    //an error has occured, prep the UI and send user message
+                    var data = await responseMessage.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<OutputHandler>(data);
+                    subscriptionViewModel.OutputHandler = result;
+                    subscriptionViewModel.Clients = await StaticDataHandler.GetClients(BaseUrl);
+                    subscriptionViewModel.Promotions = await StaticDataHandler.GetPromotions(BaseUrl);
+                    subscriptionViewModel.SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl);
+                    subscriptionViewModel.SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl);
+                    subscriptionViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
+                    subscriptionViewModel.TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl);
+                    subscriptionViewModel.ClientPaymentRecords = await StaticDataHandler.GetPayments(BaseUrl); //TODO filter by user
+
+                    //populate the dropdown for reload
+                    return View(subscriptionViewModel);
+                }
+            }
+
         }
     }
 }

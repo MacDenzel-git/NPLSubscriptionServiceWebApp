@@ -1,16 +1,16 @@
-﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.ClientTypeViewModel
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.SubscriptionStatusViewModel
 @{
-    ViewData["Title"] = "Update";
+    ViewData["Title"] = "Create";
 }
 <nav aria-label="breadcrumb" role="navigation">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Home</a></li>
-        <li class="breadcrumb-item"><a asp-action="Index">Client Type</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Update</li>
+        <li class="breadcrumb-item"><a asp-action="Index">Subscription Status</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Create</li>
     </ol>
 </nav>
 
-<h1>Update</h1>
+<h1>Create</h1>
 
 <div class="card">
     <div class="card-header">
@@ -30,29 +30,19 @@
         {
             <h4 class="text-success font-weight-bold p-3">@Model.OutputHandler.Message</h4>
         }
-        <form asp-action="Update" method="post">
+        <form asp-action="Create" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-row ">
 
-                <input asp-for="@Model.ClientType.ClientTypeId" hidden />
-                 <input asp-for="@Model.ClientType.CreatedBy" hidden />
-                    <input asp-for="@Model.ClientType.CreatedDate" hidden />
                 <div class="form-group col-md-4">
-                    <label>Client Type Description</label>
+                    <label>Subscription Status Description</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" asp-for="@Model.ClientType.Description" placeholder="Enter Client Name" required>
-                        <span asp-validation-for="@Model.ClientType.Description" class="text-danger"></span>
+                        <input type="text" class="form-control" asp-for="@Model.SubscriptionStatus.Description" placeholder="Enter Subscription Status" required>
+                        <span asp-validation-for="@Model.SubscriptionStatus.Description" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="form-group col-md-4">
-                    <label>Active </label>
-                    <div class="input-group">
-                        <input class="form-check-input" asp-for="ClientType.IsActive" /> @Html.DisplayNameFor(model => model.ClientType.IsActive)
-
-                    </div>
-                </div>
-
-
+               
             </div>
 
             <button type="submit" class="btn btn-primary">Save</button>

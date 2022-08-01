@@ -63,6 +63,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
                 clientVm.OutputHandler.Message = error.Message;
+                clientVm.OutputHandler.IsErrorOccured = true;
+
                 return View(clientVm);
             }
             if (!String.IsNullOrEmpty(message))

@@ -33,7 +33,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 viewModel.OutputHandler = new OutputHandler { IsErrorOccured = false };
                
                 //Get Client Type through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllSubscriptionStatuss";
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllSubscriptionStatuses";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -52,6 +52,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     {
                         //if the database doesn't have values, return message to user
                         viewModel.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
+
                         return View(viewModel);
                     }
 
@@ -63,6 +64,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
                 viewModel.OutputHandler.Message = error.Message;
+                viewModel.OutputHandler.IsErrorOccured = true;
+
                 return View(viewModel);
             }
             if (!String.IsNullOrEmpty(message))
@@ -93,8 +96,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             OutputHandler result = new();
 
             //capture Created Date = the time this item was/is created
-            //subscriptionStatusViewModel.SubscriptionStatus.CreatedDate = DateTime.Now.AddHours(2);
-           // subscriptionStatusViewModel.SubscriptionStatus.CreatedBy = "SYSADMIN"; //add session user's Email
+            subscriptionStatusViewModel.SubscriptionStatus.CreatedDate = DateTime.Now.AddHours(2);
+            subscriptionStatusViewModel.SubscriptionStatus.CreatedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Create";
             using (var client = new HttpClient())
@@ -178,8 +181,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             OutputHandler result = new();
 
             //capture Modified Date = the time this item was modified/changed
-            //subscriptionStatusViewModel.SubscriptionStatus.ModifiedDate = DateTime.Now.AddHours(2);
-            //subscriptionStatusViewModel.SubscriptionStatus.ModifiedBy = "SYSADMIN"; //add session user's Email
+            subscriptionStatusViewModel.SubscriptionStatus.ModifiedDate = DateTime.Now.AddHours(2);
+            subscriptionStatusViewModel.SubscriptionStatus.ModifiedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Update";
 

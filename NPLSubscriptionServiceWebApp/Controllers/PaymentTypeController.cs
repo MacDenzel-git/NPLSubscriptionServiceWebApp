@@ -63,6 +63,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
                 viewModel.OutputHandler.Message = error.Message;
+                viewModel.OutputHandler.IsErrorOccured = true;
+
                 return View(viewModel);
             }
             if (!String.IsNullOrEmpty(message))
@@ -123,7 +125,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
         }
         [HttpGet]
-        public async Task<IActionResult> Update(int clientTypeId)
+        public async Task<IActionResult> Update(int paymentTypeId)
         {
             //Setup Dropdown lists  
             var clientTypeVm = new PaymentTypeViewModel
@@ -134,7 +136,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             try
             {
                 //Get PaymentType through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetPaymentType?PaymentTypeId={clientTypeId}";
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetPaymentType?PaymentTypeId={paymentTypeId}";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);

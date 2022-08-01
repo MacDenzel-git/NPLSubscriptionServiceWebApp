@@ -9,10 +9,10 @@ using System.Net;
 
 namespace NPLSubscriptionServiceWebApp.Controllers
 {
-    public class PromotionController : Controller
+    public class TypeOfDeliveryController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly string apiUrl = "Promotion";
+        private readonly string apiUrl = "TypeOfDelivery";
         public string BaseUrl
         {
             get
@@ -20,20 +20,20 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 return _configuration["EndpointUrl"];
             }
         }
-        public PromotionController(IConfiguration configuration)
+        public TypeOfDeliveryController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
         public async Task<IActionResult> Index(string message = "")
         {
-            PromotionViewModel viewModel = new PromotionViewModel();
+            TypeOfDeliveryViewModel viewModel = new TypeOfDeliveryViewModel();
 
             try
             {
                 viewModel.OutputHandler = new OutputHandler { IsErrorOccured = false };
                
                 //Get Client Type through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllPromotions";
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllTypeOfDeliveries";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -45,7 +45,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        viewModel.Promotions = JsonConvert.DeserializeObject<IEnumerable<PromotionDTO>>(data);
+                        viewModel.TypeOfDeliveries = JsonConvert.DeserializeObject<IEnumerable<TypeOfDeliveryDTO>>(data);
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -80,7 +80,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
         public async Task<IActionResult> Create()
         {
             //Populate dropDown List
-            var viewModel = new PromotionViewModel
+            var viewModel = new TypeOfDeliveryViewModel
             {
                 OutputHandler = new OutputHandler { IsErrorOccured = false }
             };
@@ -90,53 +90,53 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(PromotionViewModel promotionViewModel)
+        public async Task<IActionResult> Create(TypeOfDeliveryViewModel typeOfDeliveryViewModel)
         {
             OutputHandler result = new();
 
             //capture Created Date = the time this item was/is created
-            promotionViewModel.Promotion.CreatedDate = DateTime.Now.AddHours(2);
-            promotionViewModel.Promotion.CreatedBy = "SYSADMIN"; //add session user's Email
+            typeOfDeliveryViewModel.TypeOfDelivery.CreatedDate = DateTime.Now.AddHours(2);
+            typeOfDeliveryViewModel.TypeOfDelivery.CreatedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Create";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, promotionViewModel.Promotion);
+                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, typeOfDeliveryViewModel.TypeOfDelivery);
 
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "Promotion", new { message = result.Message });
+                    return RedirectToAction("Index", "TypeOfDelivery", new { message = result.Message });
                 }
                 else
                 {
                     //an error has occured, prep the UI and send user message
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    promotionViewModel.OutputHandler = result;
+                    typeOfDeliveryViewModel.OutputHandler = result;
 
                     //populate the dropdown for reload
-                     return View(promotionViewModel);
+                     return View(typeOfDeliveryViewModel);
                 }
             }
 
         }
         [HttpGet]
-        public async Task<IActionResult> Update(int promotionId)
+        public async Task<IActionResult> Update(int typeOfDeliveryId)
         {
             //Setup Dropdown lists  
-            var promotionVm = new PromotionViewModel
+            var clientTypeVm = new TypeOfDeliveryViewModel
             {
              
                 OutputHandler = new OutputHandler { IsErrorOccured = false }
             };
             try
             {
-                //Get Promotion through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetPromotion?PromotionId={promotionId}";
+                //Get TypeOfDelivery through API end Point
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetTypeOfDelivery?TypeOfDeliveryId={typeOfDeliveryId}";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -148,15 +148,15 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        promotionVm.Promotion = JsonConvert.DeserializeObject<PromotionDTO>(data);
+                        clientTypeVm.TypeOfDelivery = JsonConvert.DeserializeObject<TypeOfDeliveryDTO>(data);
                         
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
                     {
                         //if the database doesn't have values, return message to user
-                        promotionVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
-                        return View(promotionVm);
+                        clientTypeVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
+                        return View(clientTypeVm);
                     }
                 };
             }
@@ -165,35 +165,35 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 //in an event of an exception return General error
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
-                promotionVm.OutputHandler = new OutputHandler
+                clientTypeVm.OutputHandler = new OutputHandler
                 {
                     IsErrorOccured = true,
                     Message = error.Message
                 };
             }
-            return View(promotionVm);
+            return View(clientTypeVm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(PromotionViewModel promotionViewModel)
+        public async Task<IActionResult> Update(TypeOfDeliveryViewModel typeOfDeliveryViewModel)
         {
             OutputHandler result = new();
 
             //capture Modified Date = the time this item was modified/changed
-            promotionViewModel.Promotion.ModifiedDate = DateTime.Now.AddHours(2);
-            promotionViewModel.Promotion.ModifiedBy = "SYSADMIN"; //add session user's Email
+            //typeOfDeliveryViewModel.TypeOfDelivery.ModifiedDate = DateTime.Now.AddHours(2);
+            //typeOfDeliveryViewModel.TypeOfDelivery.ModifiedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Update";
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, promotionViewModel.Promotion);
+                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, typeOfDeliveryViewModel.TypeOfDelivery);
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "Promotion", new { message = result.Message });
+                    return RedirectToAction("Index", "TypeOfDelivery", new { message = result.Message });
                 }
                 else
                 {
@@ -202,7 +202,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
                     if (result.Message == null)
                     {
-                        promotionViewModel.OutputHandler = new OutputHandler
+                        typeOfDeliveryViewModel.OutputHandler = new OutputHandler
                         {
                             IsErrorOccured = true,
                             Message = StandardMessages.GetGeneralErrorMessage()
@@ -210,20 +210,20 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     }
                     else
                     {
-                        promotionViewModel.OutputHandler = result;
+                        typeOfDeliveryViewModel.OutputHandler = result;
                     }
 
 
                     //populate the dropdown for reload
                    
-                    return View(promotionViewModel);
+                    return View(typeOfDeliveryViewModel);
                 }
             }
         }
         public async Task<IActionResult> Delete(int id)
         {
             OutputHandler resultHandler = new();
-            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?promotionId={id}";
+            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?typeOfDeliveryId={id}";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);

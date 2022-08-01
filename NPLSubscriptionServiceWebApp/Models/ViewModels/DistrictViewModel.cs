@@ -8,5 +8,6 @@ namespace NPLSubscriptionServiceWebApp.Models.ViewModels
         public OutputHandler OutputHandler { get; set; }
         public DistrictDTO  District { get; set; }
         public IEnumerable<DistrictDTO>  Districts { get; set; }
+        public IEnumerable<CountryDTO>  Countries { get; set; }
     }
 }

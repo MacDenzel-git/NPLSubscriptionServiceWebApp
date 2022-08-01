@@ -63,6 +63,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
                 viewModel.OutputHandler.Message = error.Message;
+                viewModel.OutputHandler.IsErrorOccured = true ;
+                 
                 return View(viewModel);
             }
             if (!String.IsNullOrEmpty(message))
@@ -80,7 +82,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             //Populate dropDown List
             var viewModel = new DistrictViewModel
             {
-                OutputHandler = new OutputHandler { IsErrorOccured = false }
+                OutputHandler = new OutputHandler { IsErrorOccured = false },
+                Countries = await StaticDataHandler.GetCountries(BaseUrl)   
             };
 
             return View(viewModel);
@@ -93,8 +96,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             OutputHandler result = new();
 
             //capture Created Date = the time this item was/is created
-            //districtViewModel.District.CreatedDate = DateTime.Now.AddHours(2);
-           // districtViewModel.District.CreatedBy = "SYSADMIN"; //add session user's Email
+            districtViewModel.District.DateCreated = DateTime.Now.AddHours(2);
+            districtViewModel.District.CreatedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Create";
             using (var client = new HttpClient())
@@ -117,6 +120,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     districtViewModel.OutputHandler = result;
 
                     //populate the dropdown for reload
+                    districtViewModel.Countries = await StaticDataHandler.GetCountries(BaseUrl);
+
                      return View(districtViewModel);
                 }
             }
@@ -128,7 +133,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             //Setup Dropdown lists  
             var districtVm = new DistrictViewModel
             {
-             
+                Countries = await StaticDataHandler.GetCountries(BaseUrl),
                 OutputHandler = new OutputHandler { IsErrorOccured = false }
             };
             try
@@ -169,6 +174,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     Message = error.Message
                 };
             }
+
+            districtVm.Countries = await StaticDataHandler.GetCountries(BaseUrl);
             return View(districtVm);
         }
 

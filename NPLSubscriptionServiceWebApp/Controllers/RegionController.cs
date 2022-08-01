@@ -63,6 +63,8 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
                 viewModel.OutputHandler.Message = error.Message;
+                viewModel.OutputHandler.IsErrorOccured = true;
+
                 return View(viewModel);
             }
             if (!String.IsNullOrEmpty(message))
@@ -215,7 +217,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
 
                     //populate the dropdown for reload
-                    regionViewModel.Countries = await StaticDataHandler.GetCountries(BaseUrl),
+                    regionViewModel.Countries = await StaticDataHandler.GetCountries(BaseUrl);
                     return View(regionViewModel);
                 }
             }

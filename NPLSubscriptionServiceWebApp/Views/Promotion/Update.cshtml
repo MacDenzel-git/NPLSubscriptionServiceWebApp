@@ -1,11 +1,11 @@
-﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.ClientTypeViewModel
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.PromotionViewModel
 @{
     ViewData["Title"] = "Update";
 }
 <nav aria-label="breadcrumb" role="navigation">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Home</a></li>
-        <li class="breadcrumb-item"><a asp-action="Index">Client Type</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Promotion</a></li>
         <li class="breadcrumb-item active" aria-current="page">Update</li>
     </ol>
 </nav>
@@ -34,21 +34,21 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-row ">
 
-                <input asp-for="@Model.ClientType.ClientTypeId" hidden />
-                 <input asp-for="@Model.ClientType.CreatedBy" hidden />
-                    <input asp-for="@Model.ClientType.CreatedDate" hidden />
-                <div class="form-group col-md-4">
-                    <label>Client Type Description</label>
+                <input asp-for="@Model.Promotion.PromotionId" hidden />
+                 <input asp-for="@Model.Promotion.CreatedBy" hidden />
+                    <input asp-for="@Model.Promotion.CreatedDate" hidden />
+                 <div class="form-group col-md-4">
+                    <label>Promotion Code</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" asp-for="@Model.ClientType.Description" placeholder="Enter Client Name" required>
-                        <span asp-validation-for="@Model.ClientType.Description" class="text-danger"></span>
+                        <input type="text" class="form-control" asp-for="@Model.Promotion.PromotionCode" placeholder="Enter Promotion Code" required>
+                        <span asp-validation-for="@Model.Promotion.PromotionCode" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="form-group col-md-4">
-                    <label>Active </label>
+                   <div class="form-group col-md-4">
+                    <label>Discount Percentage</label>
                     <div class="input-group">
-                        <input class="form-check-input" asp-for="ClientType.IsActive" /> @Html.DisplayNameFor(model => model.ClientType.IsActive)
-
+                        <input type="text" class="form-control" asp-for="@Model.Promotion.DiscountPercentage" placeholder="Enter Discount Percentage  e.g 10" required>
+                        <span asp-validation-for="@Model.Promotion.DiscountPercentage" class="text-danger"></span>
                     </div>
                 </div>
 

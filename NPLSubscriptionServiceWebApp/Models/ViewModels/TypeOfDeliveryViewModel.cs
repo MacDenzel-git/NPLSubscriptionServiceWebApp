@@ -3,11 +3,11 @@ using NPLReusableResourcesPackage.General;
 
 namespace NPLSubscriptionServiceWebApp.Models.ViewModels
 {
-    public class SubscriptionTypeViewModel
+    public class TypeOfDeliveryViewModel
     {
         public OutputHandler OutputHandler { get; set; }
-        public SubscriptionTypeDTO SubscriptionType { get; set; }
-        public IEnumerable<SubscriptionTypeDTO> SubscriptionTypes { get; set; }
+        public TypeOfDeliveryDTO TypeOfDelivery { get; set; }
+        public IEnumerable<TypeOfDeliveryDTO> TypeOfDeliveries { get; set; }
 
     }
 }
