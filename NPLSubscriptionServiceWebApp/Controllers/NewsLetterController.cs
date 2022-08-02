@@ -263,7 +263,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
         public async Task<IActionResult> SendNewsLetter(int newsLetterId)
         {
             OutputHandler resultHandler = new();
-            var requestUrl = $"{BaseUrl}{apiUrl}/SendNewsLetter?NewsLetterId={id}";
+            var requestUrl = $"{BaseUrl}{apiUrl}/SendNewsLetter?NewsLetterId={newsLetterId}";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
