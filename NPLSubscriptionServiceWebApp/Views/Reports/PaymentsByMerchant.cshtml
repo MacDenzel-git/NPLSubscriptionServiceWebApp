@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Payment Types";
+     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <div class="content">
@@ -35,10 +36,8 @@
                                         <th>Payment Type Description</th>
                                         <th>Account Number</th>
                                         <th>Trans Id</th>
-                                         <th>Amount</th>
                                         <th>Validity</th>
                                        
-                                        @*<th class="text-right">Actions</th>*@
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -51,7 +50,6 @@
                                                 <td>@Html.DisplayFor(modelItme => item.PaymentTypeDescription)</td>
                                                 <td>@Html.DisplayFor(modelItme => item.AccountNumber)</td>
                                                 <td>@Html.DisplayFor(modelItme => item.TransactionId)</td>
-                                                <td>@Html.DisplayFor(modelItme => item.Amount)</td>
                                                 @if (item.IsUsed)
                                                 {
                                                     <td>Used</td>
@@ -61,19 +59,7 @@
                                                     <td>Valid</td>
 
                                                 }
-                                                @*<td class="td-actions text-right">
-                                                    <a class="btn btn-info animation-on-hover btn-fab btn-icon btn-round"
-                                                    type="button" rel="tooltip" data-toggle="tooltip" data-placement="top"
-                                                    title="update file type" asp-action="Update" asp-route-paymentTypeId="@item.PaymentTypeId">
-                                                    <i class="material-icons">update</i>
-                                                    </a>
-                                                    |
-                                                    <a class="btn btn-info animation-on-hover btn-fab btn-icon btn-round"
-                                                    type="button" rel="tooltip" data-toggle="tooltip"
-                                                    data-placement="bottom" title="delete file type" onclick="ConfirmFunction(@item.PaymentTypeId)">
-                                                    <i class="material-icons">delete</i>
-                                                    </a>
-                                                    </td>*@
+                                               
                                             </tr>
                                         }
 

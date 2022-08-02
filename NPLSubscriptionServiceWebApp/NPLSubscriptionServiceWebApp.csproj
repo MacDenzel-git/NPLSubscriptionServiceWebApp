@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\Chosen\chosen.jquery.js" />
+    <None Include="wwwroot\Chosen\chosen.jquery.min.js" />
+    <None Include="wwwroot\Chosen\init.js" />
+    <None Include="wwwroot\Chosen\prism.js" />
     <None Include="wwwroot\js\site.js" />
     <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map" />
     <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map" />
@@ -59,8 +63,8 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NPLDataAccessLayer" Version="1.1.5" />
-    <PackageReference Include="NPLReusableResourcesPackage" Version="1.0.0" />
+    <PackageReference Include="NPLDataAccessLayer" Version="1.3.0" />
+    <PackageReference Include="NPLReusableResourcesPackage" Version="1.0.4" />
   </ItemGroup>
 
 </Project>

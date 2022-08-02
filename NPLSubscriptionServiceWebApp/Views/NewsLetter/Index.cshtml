@@ -1,6 +1,7 @@
-﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.DistrictViewModel
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.NewsLetterViewModel
+
 @{
-    ViewData["Title"] = "Districts";
+    ViewData["Title"] = "News Letter";
 }
 
 <div class="content">
@@ -9,8 +10,8 @@
             <div class="col-md-12">
                 <div class="card card-plain">
                     <div class="card-header card-header-primary">
-                        <h4 class="card-title mt-0">Districts</h4>
-                        <p class="card-category">Below is a list of all Districts. Click on the update Icon for more information</p>
+                        <h4 class="card-title mt-0">News Letter</h4>
+                        <p class="card-category">Below is a list of News Letters. Click on the update Icon for more information</p>
                         <div class="row">
                             <div class="col-12 text-right">
                                 <a asp-action="Create" class="btn btn-sm btn-simple btn-outline-info m-2 animation-on-hover"><i class="tim-icons icon-simple-add"></i> Add New</a>
@@ -30,30 +31,39 @@
                             <table id="dtBasicExample" class="table table-hover dataTable">
                                 <thead class="font-weight-bold text-primary">
                                     <tr>
-                                        <th>Publication Title</th>
-                                        <th>Paper Dated </th>
-                                        <th>Status </th>
+                                        <th>Publication</th>
+                                        <th>Date Released</th>
+                                        <th>Status</th>
+                                        <th>Submission Count</th></>
+                                        <th>Send To Clients</th>
+                                    
                                         <th class="text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                       @if (Model.Districts != null)
+                                       @if (Model.NewsLetters != null)
                                     {
-                                        @foreach (var item in Model.Districts.ToList().OrderBy(item => item.DistrictName))
+                                        @foreach (var item in Model.NewsLetters.ToList().OrderBy(item => item.CreatedDate))
                                         {
                                             <tr>
-                                                <td>@Html.DisplayFor(modelItme => item.DistrictName)</td>
-                                                <td>@Html.DisplayFor(modelItme => item.CountryName)</td>
+                                                <td>@Html.DisplayFor(modelItme => item.PublicationTitle)</td>
+                                                <td>@Html.DisplayFor(modelItme => item.PaperDated)</td>
+                                                <td>@Html.DisplayFor(modelItme => item.Status)</td>
+                                                <td>@Html.DisplayFor(modelItme => item.SubmissionCount)</td>
+                                                @if (!item.IsSubmittedSuccessfully)
+                                                {
+                                                    <td><a asp-action="SendNewsLetter" asp-route-newsLetterId="@item.NewsLetterId" class="btn btn-sm">Send</a> </td>
+                                                }
                                                 <td class="td-actions text-right">
                                                     <a class="btn btn-info animation-on-hover btn-fab btn-icon btn-round"
                                                type="button" rel="tooltip" data-toggle="tooltip" data-placement="top"
-                                               title="update file type" asp-action="Update" asp-route-districtId="@item.DistrictId">
+                                               title="update file type" asp-action="Update" asp-route-newsLetterId="@item.NewsLetterId">
                                                         <i class="material-icons">update</i>
                                                     </a>
                                                     |
                                                     <a class="btn btn-info animation-on-hover btn-fab btn-icon btn-round"
                                                type="button" rel="tooltip" data-toggle="tooltip"
-                                               data-placement="bottom" title="delete file type" onclick="ConfirmFunction(@item.DistrictId)">
+                                               data-placement="bottom" title="delete file type" onclick="ConfirmFunction(@item.NewsLetterId)">
                                                         <i class="material-icons">delete</i>
                                                     </a>
                                                 </td>

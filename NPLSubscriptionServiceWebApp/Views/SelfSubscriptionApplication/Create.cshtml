@@ -1,0 +1,134 @@
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.SelfSubscriptionApplicationViewModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="card">
+    <div class="card-header">
+
+        <div class="row">
+            <div class="col-12 text-right">
+                <a asp-action="Index" class="btn btn-sm btn-simple m-2 animation-on-hover">  <i class="tim-icons icon-bullet-list-67"></i> Back</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <P> please provide the folliwng details and submit in order to subscribe to our publications</P>
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (Model.OutputHandler.IsErrorOccured)
+            {
+                <h4 class="text-danger font-weight-bold p-3">@Model.OutputHandler.Message</h4>
+            }
+            else if (Model.OutputHandler.Message != null)
+            {
+                <h4 class="text-success font-weight-bold p-3">@Model.OutputHandler.Message</h4>
+            }
+
+            <div class="row">
+                <div class="col-md-6">
+                     <div class="form-group  ">
+                         <div class="form-group  ">
+                        <label>Are you an Individual or Representing a Company</label>
+                        <div class="input-group">
+                            <select class="form-control form-control-sm" required asp-for="@Model.SelfSubscriptionApplication.ClientTypeId"
+                                    asp-items="@(new SelectList(Model.ClientTypes, "ClientTypeId", "Description") )"></select>
+                        </div>
+                    </div>
+                    <div class="form-group  ">
+                        <label class="font-weight-bold">Fullname</label>
+                        <div class="input-group">
+                             <input required type="text" class="form-control" asp-for="@Model.SelfSubscriptionApplication.FullName" placeholder="Enter Your Fullname">
+                            <span asp-validation-for="@Model.SelfSubscriptionApplication.FullName" class="text-danger"></span>
+                        </div>
+                    </div>
+                     <div class="form-group  ">
+                        <label class="font-weight-bold">Email</label>
+                        <div class="input-group">
+                             <input required type="text" class="form-control" asp-for="@Model.SelfSubscriptionApplication.Email" placeholder="Enter Email">
+                            <span asp-validation-for="@Model.SelfSubscriptionApplication.Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                     <div class="form-group  ">
+                        <label class="font-weight-bold">Phone Number</label>
+                        <div class="input-group">
+                             <input type="text" class="form-control" asp-for="@Model.SelfSubscriptionApplication.PhoneNumber" placeholder="Phone Number include country code e.g +265">
+                            <span asp-validation-for="@Model.SelfSubscriptionApplication.FullName" class="text-danger"></span>
+                        </div>
+                    </div>
+                   
+                    
+                        <label>Choose Publication</label>
+                        <div class="input-group">
+                            <select class="form-control form-control-sm" required asp-for="@Model.SelfSubscriptionApplication.PublicationId"
+                                    asp-items="@(new SelectList(Model.Publications, "PublicationId", "PublicationTitle") )"></select>
+                        </div>
+                    </div>
+                    <div class="form-group  ">
+                        <label>Number of Copies</label>
+                        <div class="input-group">
+                             <input required type="text" class="form-control" asp-for="@Model.SelfSubscriptionApplication.NumberOfCopies" placeholder="Enter Number of Copies Per Day" />
+                            <span asp-validation-for="@Model.SelfSubscriptionApplication.NumberOfCopies" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group  ">
+                        <label>Method of Delivery</label>
+                        <div class="input-group">
+                            <select class="form-control form-control-sm" required asp-for="@Model.SelfSubscriptionApplication.TypeOfDeliveryId"
+                                    asp-items="@(new SelectList(Model.TypeOfDeliveries, "TypeOfDeliveryId", "TypeOfDeliveryDescription") )"></select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group  ">
+                        <label class="font-weight-bold">Subscription Duration</label>
+                        <div class="input-group">
+                            <select class="form-control form-control-sm" required asp-for="@Model.SelfSubscriptionApplication.SubscriptionTypeId"
+                                    asp-items="@(new SelectList(Model.SubscriptionTypes, "SubscriptionTypeId", "SubscriptionName") )"></select>
+                        </div>
+                    </div>
+                    <div class="form-group  ">
+                        <label>Payment Method</label>
+                        <div class="input-group">
+                            <select class="form-control form-control-sm" required asp-for="@Model.SelfSubscriptionApplication.PaymentTypeId"
+                                    asp-items="@(new SelectList(Model.PaymentTypes, "PaymentTypeId", "Description") )"></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group  ">
+                        <label class="font-weight-bold">Start Date for Subscription</label>
+                        <div class="input-group">
+                             <input required type="date" class="form-control bootstrap-datetimepicker-widget" asp-for="@Model.SelfSubscriptionApplication.SubscriptionStartDate" required>
+                            <span asp-validation-for="@Model.SelfSubscriptionApplication.SubscriptionStartDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                      
+                         <div class="form-group  ">
+                        <label class="font-weight-bold">Enter Payment Reference or TransId</label>
+                        <div class="input-group">
+                             <input type="text" class="form-control" asp-for="@Model.SelfSubscriptionApplication.TransactionId" placeholder="Phone Number include country code e.g +265">
+                            <span asp-validation-for="@Model.SelfSubscriptionApplication.TransactionId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="text-center mt-5">
+                        <h1 class="display-4 font-weight-bold">Nation Publications</h1>
+
+                        <img src="~/img/Npl logo.jpg" width="40%" height="41%" />
+                    </div>
+                    <h1 class="display-4 font-weight-bold m-4" style="box-shadow: 0 2px 2px 2px rgb(0, 157, 212), 0 2px 2px -4px rgb(0, 159, 210);color: #343432;background-color: #009fd6;">
+                       Self Subscription Service
+                    </h1>
+
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+<script>
+    $('.datepicker').datepicker();
+</script>

@@ -8,5 +8,6 @@ namespace NPLSubscriptionServiceWebApp.Models.ViewModels
         public OutputHandler OutputHandler { get; set; }
         public SubscriptionStatusDTO SubscriptionStatus { get; set; }
         public IEnumerable<SubscriptionStatusDTO> SubscriptionStatuses { get; set; }
+        
     }
 }

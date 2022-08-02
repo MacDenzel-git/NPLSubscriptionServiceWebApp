@@ -1,0 +1,336 @@
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.ReportDashBoardVM
+
+@{
+    ViewData["Title"] = "Home Page";
+    //Layout = "~/Views/Shared/_ReportAdminLayout.cshtml";
+}
+
+<div class="section__content section__content--p30">
+    <div class="container-fluid">
+
+        <div class="row m-t-25">
+            <div class="col-sm-6 col-lg-3">
+                <div class="overview-item overview-item--c1">
+                    <div class="overview__inner">
+                        <div class="overview-box clearfix">
+                            <div class="row">
+                                <div class="col-lg-5">
+                                    <div class="icon">
+                                        <i class="fa fa-users"></i>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7"><h2 class="text-center font-weight-bold" style="color: #fff;">@Model.ReportDashBoard.NumberOfSubscribers</h2></div>
+                            </div>
+                            <div class="text">
+
+                                <span>Subscribers</span>
+                            </div>
+                        </div>
+                        <div class="overview-chart">
+                            <canvas id="widgetChart1"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="overview-item overview-item--c2">
+                    <div class="overview__inner">
+                        <div class="overview-box clearfix">
+                            <div class="row">
+                                <div class="col-lg-5">
+                                    <div class="icon">
+                                        <i class="fa fa-volume-up"></i>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7"><h2 class="text-center font-weight-bold" style="color: #fff;">@Model.ReportDashBoard.NewsLettersSent</h2></div>
+                            </div>
+
+                            <div class="text">
+
+                                <span>NewsLetters </span>
+                            </div>
+                        </div>
+                        <div class="overview-chart">
+                            <canvas id="widgetChart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="overview-item overview-item--c3">
+                    <div class="overview__inner">
+                        <div class="overview-box clearfix">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="icon">
+                                        <i class="fa fa-graduation-cap"></i>
+                                    </div>
+                                </div>
+                                @if (Model.ReportDashBoard.ActiveSubscriptions != null)
+                                {
+                                    <div class="col-lg-7"><h2 class=" text-center text-light  font-weight-bold">@Model.ReportDashBoard.ExpiredSubscriptions.Count()</h2></div>
+                                }
+                            </div>
+
+                            <div class="text">
+
+                                <span># of Expired subscriptions</span>
+                            </div>
+                        </div>
+                        <div class="overview-chart">
+                            <canvas id="widgetChart3"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="overview-item overview-item--c4">
+                    <div class="overview__inner">
+                        <div class="overview-box clearfix">
+                            <div class="row">
+                                <div class="col-lg-5">
+                                    <div class="icon">
+                                        <i class="fa fa-user-plus"></i>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7"><h2 class="text-center font-weight-bold" style="color: #fff;">@Model.ReportDashBoard.NumberOfUsersRegisteredToday</h2></div>
+                            </div>
+
+                            <div class="text">
+
+                                <span>Registered Today</span>
+                            </div>
+                        </div>
+                        <div class="overview-chart">
+                            <canvas id="widgetChart4"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        @if (Model.OutputHandler.IsErrorOccured)
+        {
+            <h6 class="text-danger font-weight-bold p-3">@Model.OutputHandler.Message</h6>
+        }
+        else if (Model.OutputHandler.Message != null)
+        {
+            <h6 class="text-success font-weight-bold p-3">@Model.OutputHandler.Message</h6>
+        }
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title">Active Subscription </h4>
+                    </div>
+                    <div class="card-body">
+                        <table id="table2" class="display table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Client Name
+                                    </th>
+                                    <th>
+                                        Publication
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>Expiry Date</th>
+                                    <th>Subscription Duration </th>
+                                    <th>Total Subscriptions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if (Model.ReportDashBoard.ActiveSubscriptions != null)
+                                {
+                                    @foreach (var item in Model.ReportDashBoard.ActiveSubscriptions.OrderBy(x => x.PublicationTitle))
+                                    {
+
+                                        <tr>
+                                            <td>
+                                                @item.ClientName
+                                            </td>
+                                            <td>
+                                                @item.PublicationTitle
+                                            </td>
+                                            <td> @item.SubscriptionStatusDescription</td>
+                                            <td> @item.ExpiryDate</td>
+                                            <td> @item.SubscriptionTypeDescription</td>
+                                            <td> @item.TotalSubscriptions</td>
+
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title">Expired Subscription </h4>
+                    </div>
+                    <div class="card-body">
+                        <table id="table2" class="display table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Client Name
+                                    </th>
+                                    <th>
+                                        Publication
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>Expiry Date</th>
+                                    <th>Subscription Duration </th>
+                                    <th>Total Subscriptions </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if (Model.ReportDashBoard.ExpiredSubscriptions != null)
+                                {
+                                    @foreach (var item in Model.ReportDashBoard.ExpiredSubscriptions.OrderBy(x => x.PublicationTitle))
+                                    {
+
+                                        <tr>
+                                            <td>
+                                                @item.ClientName
+                                            </td>
+                                            <td>
+                                                @item.PublicationTitle
+                                            </td>
+                                            <td> @item.SubscriptionStatusDescription</td>
+                                            <td> @item.ExpiryDate</td>
+                                            <td> @item.SubscriptionTypeDescription</td>
+                                            <td>@item.TotalSubscriptions</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title">Client By Region </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                             @if (Model.ReportDashBoard.Regions != null)
+                            {
+                                @foreach(var item in Model.ReportDashBoard.Regions.OrderBy(x => x.RegionName))
+                                {
+                                    <div class="col-md-3">
+                                <a asp-action="ClientsByRegion" asp-controller="Reports" asp-route-regionId="@item.RegionId">@item.RegionName</a>
+                                    </div>
+                                }
+                            }
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title">Payments By Merchant </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                              @if (Model.ReportDashBoard.PaymentTypes != null)
+                            {
+                                @foreach(var item in Model.ReportDashBoard.PaymentTypes.OrderBy(x => x.Description))
+                                {
+                                    <div class="col-md-3">
+                                    <a asp-action="PaymentsByMerchant" asp-route-paymentTypeId="@item.PaymentTypeId" asp-controller="Reports">@item.Description</a>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title">Publication Statistics</h4>
+                    </div>
+                    <div class="card-body">
+                        <table id="table2" class="display table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Region
+                                    </th>
+                                    <th>
+                                        Publication
+                                    </th>
+                                    <th>Subscribers</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if (Model.ReportDashBoard.PublicationStatistics != null)
+                                {
+                                    @foreach (var item in Model.ReportDashBoard.PublicationStatistics.OrderBy(x => x.PublicationTitle))
+                                    {
+
+                                        <tr>
+                                            <td>
+                                                @item.RegionName
+                                            </td>
+                                            <td>
+                                                @item.PublicationTitle
+                                            </td>
+                                            <td> @item.NumberOfSubscribers</td>
+
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#table1').DataTable({
+            "pageLength": 3
+        });
+
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('#table2').DataTable({
+            "pageLength": 10
+        });
+
+    });
+
+</script>

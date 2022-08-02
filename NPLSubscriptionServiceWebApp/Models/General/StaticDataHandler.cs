@@ -81,6 +81,23 @@ namespace NPLSubscriptionServiceWebApp.Models.General
             }
             return districts;
         }
+        
+        public static async Task<IEnumerable<PaymentDTO>> GetAllPaymentsForSubscription(string baseUrl)
+        {
+            var requestUrl = $"{baseUrl}Payment/GetAllPaymentsForSubscription";
+            IEnumerable<PaymentDTO> districts = new List<PaymentDTO>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(requestUrl);
+                HttpResponseMessage responseMessage = await client.GetAsync(requestUrl);
+                if (responseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    string data = await responseMessage.Content.ReadAsStringAsync();
+                    districts = JsonConvert.DeserializeObject<IEnumerable<PaymentDTO>>(data);
+                }
+            }
+            return districts;
+        }
 
         public static async Task<IEnumerable<PaymentTypeDTO>> GetPaymentTypes(string baseUrl)
         {

@@ -1,11 +1,11 @@
-﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.DistrictViewModel
+﻿@model NPLSubscriptionServiceWebApp.Models.ViewModels.NewsLetterViewModel
 @{
     ViewData["Title"] = "Create";
 }
 <nav aria-label="breadcrumb" role="navigation">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Home</a></li>
-        <li class="breadcrumb-item"><a asp-action="Index">District</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">News Letter</a></li>
         <li class="breadcrumb-item active" aria-current="page">Create</li>
     </ol>
 </nav>
@@ -30,28 +30,38 @@
         {
             <h4 class="text-success font-weight-bold p-3">@Model.OutputHandler.Message</h4>
         }
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+             
             <div class="form-row ">
-
+                 
                 <div class="form-group col-md-4">
-                    <label>District Name</label>
+                    <label>Date of Release</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" asp-for="@Model.District.DistrictName" placeholder="Enter District Name" required>
-                        <span asp-validation-for="@Model.District.DistrictName" class="text-danger"></span>
+                        <input type="date" class="form-control" asp-for="@Model.NewsLetter.PaperDated"   required>
+                        <span asp-validation-for="@Model.NewsLetter.PaperDated" class="text-danger"></span>
                     </div>
                 </div>
+                
+            </div> 
+            <div class="form-row ">
                 <div class="form-group col-md-4">
-                    <label>Country</label>
+                    <label>Publication</label>
                     <div class="input-group">
-                        <select class="form-control form-control-sm" required asp-for="@Model.District.CountryId"
-                                asp-items="@(new SelectList(Model.Countries, "CountryId", "CountryName") )"></select>
+                        <select class="form-control form-control-sm" required asp-for="@Model.NewsLetter.PublicationId"
+                                asp-items="@(new SelectList(Model.Publications, "PublicationId", "PublicationTitle") )"></select>
+                    </div>
+                </div> 
+                <div class="form-group col-md-4">
+                    <label>Choose File</label>
+                    <div class="input-group">
+ 
                     </div>
                 </div>
-
             </div>
-             <input class="pt-2 btn btn-outline-info btn-sm text-dark" id="pdfDoc" type="file" name="pdfDoc" accept="application/pdf" required />
+                   
+                     <input class="pt-2 btn btn-outline-info btn-sm text-dark" id="pdfDoc" type="file" name="pdfDoc" accept="application/pdf" required />
+
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>

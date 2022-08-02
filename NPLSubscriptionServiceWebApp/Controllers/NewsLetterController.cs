@@ -9,10 +9,10 @@ using System.Net;
 
 namespace NPLSubscriptionServiceWebApp.Controllers
 {
-    public class SubscriptionController : Controller
+    public class NewsLetterController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly string apiUrl = "Subscription";
+        private readonly string apiUrl = "NewsLetter";
         public string BaseUrl
         {
             get
@@ -20,20 +20,20 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 return _configuration["EndpointUrl"];
             }
         }
-        public SubscriptionController(IConfiguration configuration)
+        public NewsLetterController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
         public async Task<IActionResult> Index(string message = "")
         {
-            SubscriptionViewModel viewModel = new SubscriptionViewModel();
+            NewsLetterViewModel viewModel = new NewsLetterViewModel();
 
             try
             {
                 viewModel.OutputHandler = new OutputHandler { IsErrorOccured = false };
-
+               
                 //Get Client Type through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllSubscriptions";
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllNewsLetters";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -45,7 +45,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        viewModel.Subscriptions = JsonConvert.DeserializeObject<IEnumerable<SubscriptionDTO>>(data);
+                        viewModel.NewsLetters = JsonConvert.DeserializeObject<IEnumerable<NewsLetterDTO>>(data);
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -80,17 +80,10 @@ namespace NPLSubscriptionServiceWebApp.Controllers
         public async Task<IActionResult> Create()
         {
             //Populate dropDown List
-            var viewModel = new SubscriptionViewModel
+            var viewModel = new NewsLetterViewModel
             {
-                OutputHandler = new OutputHandler { IsErrorOccured = false },
-                Clients = await StaticDataHandler.GetClients(BaseUrl),
-                Promotions = await StaticDataHandler.GetPromotions(BaseUrl),
-                SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl),
-                SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl),
-                Publications = await StaticDataHandler.GetPublications(BaseUrl),
-                TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl),
-                ClientPaymentRecords = await StaticDataHandler.GetAllPaymentsForSubscription(BaseUrl), //TODO filter by user
-
+                OutputHandler = new OutputHandler { IsErrorOccured = false }, 
+                Publications = await StaticDataHandler.GetPublications(BaseUrl)
             };
 
             return View(viewModel);
@@ -98,67 +91,67 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(SubscriptionViewModel subscriptionViewModel)
+        public async Task<IActionResult> Create(NewsLetterViewModel newsLetterViewModel,  IFormFile pdfDoc)
         {
+              if (pdfDoc.Length > 0)
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        string extension = Path.GetExtension(pdfDoc.FileName);
+                        pdfDoc.CopyTo(ms);
+                        var fileBytes = ms.ToArray();
+                        // act on the Base64 data
+                        newsLetterViewModel.NewsLetter.File = fileBytes;
+                       newsLetterViewModel.NewsLetter.FileLocation = pdfDoc.FileName;
+                    }
+                }
+            
             OutputHandler result = new();
 
             //capture Created Date = the time this item was/is created
-            subscriptionViewModel.Subscription.CreatedDate = DateTime.Now.AddHours(2);
-            subscriptionViewModel.Subscription.CreatedBy = "SYSADMIN"; //add session user's Email
+            newsLetterViewModel.NewsLetter.CreatedDate = DateTime.Now.AddHours(2);
+            newsLetterViewModel.NewsLetter.CreatedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Create";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, subscriptionViewModel.Subscription);
+                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, newsLetterViewModel.NewsLetter);
 
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "Subscription", new { message = result.Message });
+                    return RedirectToAction("Index", "NewsLetter", new { message = result.Message });
                 }
                 else
                 {
                     //an error has occured, prep the UI and send user message
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    subscriptionViewModel.OutputHandler = result;
-                    subscriptionViewModel.Clients = await StaticDataHandler.GetClients(BaseUrl);
-                    subscriptionViewModel.Promotions = await StaticDataHandler.GetPromotions(BaseUrl);
-                    subscriptionViewModel.SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl);
-                    subscriptionViewModel.SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl);
-                    subscriptionViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
-                    subscriptionViewModel.TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl);
-                    subscriptionViewModel.ClientPaymentRecords = await StaticDataHandler.GetAllPaymentsForSubscription(BaseUrl); //TODO filter by user
+                    newsLetterViewModel.OutputHandler = result;
 
                     //populate the dropdown for reload
-                     return View(subscriptionViewModel);
+                    newsLetterViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
+                     return View(newsLetterViewModel);
                 }
             }
 
         }
         [HttpGet]
-        public async Task<IActionResult> Update(int subscriptionId)
+        public async Task<IActionResult> Update(int newsLetterId)
         {
             //Setup Dropdown lists  
-            var subscriptionVm = new SubscriptionViewModel
+            var clientTypeVm = new NewsLetterViewModel
             {
-                Clients = await StaticDataHandler.GetClients(BaseUrl),
-                Promotions = await StaticDataHandler.GetPromotions(BaseUrl),
-                SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl),
-                SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl),
                 Publications = await StaticDataHandler.GetPublications(BaseUrl),
-                TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl),
-                ClientPaymentRecords = await StaticDataHandler.GetAllPaymentsForSubscription(BaseUrl), //TODO filter by user
-
                 OutputHandler = new OutputHandler { IsErrorOccured = false }
             };
             try
             {
-                //Get Subscription through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetSubscription?SubscriptionId={subscriptionId}";
+                //Get NewsLetter through API end Point
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetNewsLetter?NewsLetterId={newsLetterId}";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -170,15 +163,15 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        subscriptionVm.Subscription = JsonConvert.DeserializeObject<SubscriptionDTO>(data);
-
+                        clientTypeVm.NewsLetter = JsonConvert.DeserializeObject<NewsLetterDTO>(data);
+                        
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
                     {
                         //if the database doesn't have values, return message to user
-                        subscriptionVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
-                        return View(subscriptionVm);
+                        clientTypeVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
+                        return View(clientTypeVm);
                     }
                 };
             }
@@ -187,35 +180,35 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 //in an event of an exception return General error
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
-                subscriptionVm.OutputHandler = new OutputHandler
+                clientTypeVm.OutputHandler = new OutputHandler
                 {
                     IsErrorOccured = true,
                     Message = error.Message
                 };
             }
-            return View(subscriptionVm);
+            return View(clientTypeVm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(SubscriptionViewModel subscriptionViewModel)
+        public async Task<IActionResult> Update(NewsLetterViewModel newsLetterViewModel)
         {
             OutputHandler result = new();
 
             //capture Modified Date = the time this item was modified/changed
-            subscriptionViewModel.Subscription.ModifiedDate = DateTime.Now.AddHours(2);
-            subscriptionViewModel.Subscription.ModifiedBy = "SYSADMIN"; //add session user's Email
+            newsLetterViewModel.NewsLetter.ModifiedDate = DateTime.Now.AddHours(2);
+            newsLetterViewModel.NewsLetter.ModifiedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Update";
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, subscriptionViewModel.Subscription);
+                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, newsLetterViewModel.NewsLetter);
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "Subscription", new { message = result.Message });
+                    return RedirectToAction("Index", "NewsLetter", new { message = result.Message });
                 }
                 else
                 {
@@ -224,7 +217,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
                     if (result.Message == null)
                     {
-                        subscriptionViewModel.OutputHandler = new OutputHandler
+                        newsLetterViewModel.OutputHandler = new OutputHandler
                         {
                             IsErrorOccured = true,
                             Message = StandardMessages.GetGeneralErrorMessage()
@@ -232,27 +225,20 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     }
                     else
                     {
-                        subscriptionViewModel.OutputHandler = result;
+                        newsLetterViewModel.OutputHandler = result;
                     }
 
 
                     //populate the dropdown for reload
-                    subscriptionViewModel.Clients = await StaticDataHandler.GetClients(BaseUrl);
-                    subscriptionViewModel.Promotions = await StaticDataHandler.GetPromotions(BaseUrl);
-                    subscriptionViewModel.SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl);
-                    subscriptionViewModel.SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl);
-                    subscriptionViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
-                    subscriptionViewModel.TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl);
-                    subscriptionViewModel.ClientPaymentRecords = await StaticDataHandler.GetAllPaymentsForSubscription(BaseUrl); //TODO filter by user
-
-                    return View(subscriptionViewModel);
+                    newsLetterViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
+                    return View(newsLetterViewModel);
                 }
             }
         }
         public async Task<IActionResult> Delete(int id)
         {
             OutputHandler resultHandler = new();
-            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?subscriptionId={id}";
+            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?NewsLetterId={id}";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
@@ -273,7 +259,30 @@ namespace NPLSubscriptionServiceWebApp.Controllers
             }
             return RedirectToAction("Index");
         }
+        
+        public async Task<IActionResult> SendNewsLetter(int newsLetterId)
+        {
+            OutputHandler resultHandler = new();
+            var requestUrl = $"{BaseUrl}{apiUrl}/SendNewsLetter?NewsLetterId={id}";
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(requestUrl);
+                HttpResponseMessage responseMessage = await client.GetAsync(requestUrl);
 
-     
+                if (responseMessage.StatusCode == HttpStatusCode.OK)
+                {
+                    string data = await responseMessage.Content.ReadAsStringAsync();
+                    resultHandler = JsonConvert.DeserializeObject<OutputHandler>(data);
+                    return RedirectToAction("Index");
+                }
+                else if (responseMessage.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    string data = await responseMessage.Content.ReadAsStringAsync();
+                    resultHandler = JsonConvert.DeserializeObject<OutputHandler>(data);
+                    return RedirectToAction("Index", new { message = resultHandler.Message });
+                }
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

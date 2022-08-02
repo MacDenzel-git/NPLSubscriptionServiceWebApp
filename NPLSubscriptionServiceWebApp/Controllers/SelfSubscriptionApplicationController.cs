@@ -7,12 +7,12 @@ using NPLSubscriptionServiceWebApp.Models.General;
 using NPLSubscriptionServiceWebApp.Models.ViewModels;
 using System.Net;
 
-namespace NPLSubscriptionServiceWebApp.Controllers
+namespace NPLSelfSubscriptionServiceWebApp.Controllers
 {
-    public class SubscriptionController : Controller
+    public class SelfSubscriptionApplicationController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly string apiUrl = "Subscription";
+        private readonly string apiUrl = "SelfSubscription";
         public string BaseUrl
         {
             get
@@ -20,20 +20,20 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 return _configuration["EndpointUrl"];
             }
         }
-        public SubscriptionController(IConfiguration configuration)
+        public SelfSubscriptionApplicationController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
         public async Task<IActionResult> Index(string message = "")
         {
-            SubscriptionViewModel viewModel = new SubscriptionViewModel();
+            SelfSubscriptionApplicationViewModel viewModel = new SelfSubscriptionApplicationViewModel();
 
             try
             {
                 viewModel.OutputHandler = new OutputHandler { IsErrorOccured = false };
 
                 //Get Client Type through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllSubscriptions";
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetAllSelfSubscriptions";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -45,7 +45,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        viewModel.Subscriptions = JsonConvert.DeserializeObject<IEnumerable<SubscriptionDTO>>(data);
+                        viewModel.SelfSubscriptionApplications = JsonConvert.DeserializeObject<IEnumerable<SelfSubscriptionApplicationDTO>>(data);
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
@@ -80,16 +80,16 @@ namespace NPLSubscriptionServiceWebApp.Controllers
         public async Task<IActionResult> Create()
         {
             //Populate dropDown List
-            var viewModel = new SubscriptionViewModel
+            var viewModel = new SelfSubscriptionApplicationViewModel
             {
                 OutputHandler = new OutputHandler { IsErrorOccured = false },
-                Clients = await StaticDataHandler.GetClients(BaseUrl),
-                Promotions = await StaticDataHandler.GetPromotions(BaseUrl),
-                SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl),
                 SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl),
                 Publications = await StaticDataHandler.GetPublications(BaseUrl),
                 TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl),
-                ClientPaymentRecords = await StaticDataHandler.GetAllPaymentsForSubscription(BaseUrl), //TODO filter by user
+                Regions = await StaticDataHandler.GetRegions(BaseUrl),
+                Districts = await StaticDataHandler.GetDistricts(BaseUrl),
+                PaymentTypes = await StaticDataHandler.GetPaymentTypes(BaseUrl)
+
 
             };
 
@@ -98,67 +98,64 @@ namespace NPLSubscriptionServiceWebApp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(SubscriptionViewModel subscriptionViewModel)
+        public async Task<IActionResult> Create(SelfSubscriptionApplicationViewModel selfSubscriptionApplicationViewModel)
         {
             OutputHandler result = new();
 
             //capture Created Date = the time this item was/is created
-            subscriptionViewModel.Subscription.CreatedDate = DateTime.Now.AddHours(2);
-            subscriptionViewModel.Subscription.CreatedBy = "SYSADMIN"; //add session user's Email
+            selfSubscriptionApplicationViewModel.SelfSubscriptionApplication.CreatedDate = DateTime.Now.AddHours(2);
+            selfSubscriptionApplicationViewModel.SelfSubscriptionApplication.CreatedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Create";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, subscriptionViewModel.Subscription);
+                HttpResponseMessage responseMessage = await client.PostAsJsonAsync(requestUrl, selfSubscriptionApplicationViewModel.SelfSubscriptionApplication);
 
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "Subscription", new { message = result.Message });
+                    return RedirectToAction("Index", "SelfSubscription", new { message = result.Message });
                 }
                 else
                 {
                     //an error has occured, prep the UI and send user message
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    subscriptionViewModel.OutputHandler = result;
-                    subscriptionViewModel.Clients = await StaticDataHandler.GetClients(BaseUrl);
-                    subscriptionViewModel.Promotions = await StaticDataHandler.GetPromotions(BaseUrl);
-                    subscriptionViewModel.SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl);
-                    subscriptionViewModel.SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl);
-                    subscriptionViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
-                    subscriptionViewModel.TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl);
-                    subscriptionViewModel.ClientPaymentRecords = await StaticDataHandler.GetAllPaymentsForSubscription(BaseUrl); //TODO filter by user
+                    selfSubscriptionApplicationViewModel.OutputHandler = result;
+                    selfSubscriptionApplicationViewModel.SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl);
+                    selfSubscriptionApplicationViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
+                    selfSubscriptionApplicationViewModel.TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl);
+                    selfSubscriptionApplicationViewModel.Regions = await StaticDataHandler.GetRegions(BaseUrl);
+                    selfSubscriptionApplicationViewModel.Districts = await StaticDataHandler.GetDistricts(BaseUrl);
+                    selfSubscriptionApplicationViewModel.PaymentTypes = await StaticDataHandler.GetPaymentTypes(BaseUrl);
 
                     //populate the dropdown for reload
-                     return View(subscriptionViewModel);
+                    return View(selfSubscriptionApplicationViewModel);
                 }
             }
 
         }
         [HttpGet]
-        public async Task<IActionResult> Update(int subscriptionId)
+        public async Task<IActionResult> Update(int subscriptionApplicationId)
         {
             //Setup Dropdown lists  
-            var subscriptionVm = new SubscriptionViewModel
+            var SelfSubscriptionVm = new SelfSubscriptionApplicationViewModel
             {
-                Clients = await StaticDataHandler.GetClients(BaseUrl),
-                Promotions = await StaticDataHandler.GetPromotions(BaseUrl),
-                SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl),
-                SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl),
+                  SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl),
                 Publications = await StaticDataHandler.GetPublications(BaseUrl),
                 TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl),
-                ClientPaymentRecords = await StaticDataHandler.GetAllPaymentsForSubscription(BaseUrl), //TODO filter by user
-
+                Regions = await StaticDataHandler.GetRegions(BaseUrl),
+                Districts = await StaticDataHandler.GetDistricts(BaseUrl),
+                PaymentTypes = await StaticDataHandler.GetPaymentTypes(BaseUrl),
                 OutputHandler = new OutputHandler { IsErrorOccured = false }
             };
             try
             {
-                //Get Subscription through API end Point
-                var requestUrl = $"{BaseUrl}{apiUrl}/GetSubscription?SubscriptionId={subscriptionId}";
+                //Get SelfSubscription through API end Point
+                var requestUrl = $"{BaseUrl}{apiUrl}/GetSelfSubscription?SelfSubscriptionId={subscriptionApplicationId}";
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(requestUrl);
@@ -170,15 +167,15 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                         string data = await responseMessage.Content.ReadAsStringAsync();
 
                         //Json to DTO convertion using Newtonsoft.Json
-                        subscriptionVm.Subscription = JsonConvert.DeserializeObject<SubscriptionDTO>(data);
+                        SelfSubscriptionVm.SelfSubscriptionApplication = JsonConvert.DeserializeObject<SelfSubscriptionApplicationDTO>(data);
 
 
                     }
                     else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
                     {
                         //if the database doesn't have values, return message to user
-                        subscriptionVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
-                        return View(subscriptionVm);
+                        SelfSubscriptionVm.OutputHandler = new OutputHandler { IsErrorOccured = false, Message = "No records found" };
+                        return View(SelfSubscriptionVm);
                     }
                 };
             }
@@ -187,35 +184,35 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                 //in an event of an exception return General error
 
                 var error = StandardMessages.getExceptionMessage(ex); //variable to avoid initialization/Instance related errors
-                subscriptionVm.OutputHandler = new OutputHandler
+                SelfSubscriptionVm.OutputHandler = new OutputHandler
                 {
                     IsErrorOccured = true,
                     Message = error.Message
                 };
             }
-            return View(subscriptionVm);
+            return View(SelfSubscriptionVm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(SubscriptionViewModel subscriptionViewModel)
+        public async Task<IActionResult> Update(SelfSubscriptionApplicationViewModel selfSubscriptionApplicationViewModel)
         {
             OutputHandler result = new();
 
             //capture Modified Date = the time this item was modified/changed
-            subscriptionViewModel.Subscription.ModifiedDate = DateTime.Now.AddHours(2);
-            subscriptionViewModel.Subscription.ModifiedBy = "SYSADMIN"; //add session user's Email
+            selfSubscriptionApplicationViewModel.SelfSubscriptionApplication.ModifiedDate = DateTime.Now.AddHours(2);
+            selfSubscriptionApplicationViewModel.SelfSubscriptionApplication.ModifiedBy = "SYSADMIN"; //add session user's Email
 
             var requestUrl = $"{BaseUrl}{apiUrl}/Update";
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
-                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, subscriptionViewModel.Subscription);
+                HttpResponseMessage responseMessage = await client.PutAsJsonAsync(client.BaseAddress, selfSubscriptionApplicationViewModel.SelfSubscriptionApplication);
                 if (responseMessage.StatusCode == HttpStatusCode.OK)
                 {
                     var data = await responseMessage.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
-                    return RedirectToAction("Index", "Subscription", new { message = result.Message });
+                    return RedirectToAction("Index", "SelfSubscription", new { message = result.Message });
                 }
                 else
                 {
@@ -224,7 +221,7 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     result = JsonConvert.DeserializeObject<OutputHandler>(data);
                     if (result.Message == null)
                     {
-                        subscriptionViewModel.OutputHandler = new OutputHandler
+                        selfSubscriptionApplicationViewModel.OutputHandler = new OutputHandler
                         {
                             IsErrorOccured = true,
                             Message = StandardMessages.GetGeneralErrorMessage()
@@ -232,27 +229,26 @@ namespace NPLSubscriptionServiceWebApp.Controllers
                     }
                     else
                     {
-                        subscriptionViewModel.OutputHandler = result;
+                        selfSubscriptionApplicationViewModel.OutputHandler = result;
                     }
 
 
                     //populate the dropdown for reload
-                    subscriptionViewModel.Clients = await StaticDataHandler.GetClients(BaseUrl);
-                    subscriptionViewModel.Promotions = await StaticDataHandler.GetPromotions(BaseUrl);
-                    subscriptionViewModel.SubscriptionStatuses = await StaticDataHandler.GetSubscriptionStatuses(BaseUrl);
-                    subscriptionViewModel.SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl);
-                    subscriptionViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
-                    subscriptionViewModel.TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl);
-                    subscriptionViewModel.ClientPaymentRecords = await StaticDataHandler.GetAllPaymentsForSubscription(BaseUrl); //TODO filter by user
+                     selfSubscriptionApplicationViewModel.SubscriptionTypes = await StaticDataHandler.GetSubscriptionTypes(BaseUrl);
+                    selfSubscriptionApplicationViewModel.Publications = await StaticDataHandler.GetPublications(BaseUrl);
+                    selfSubscriptionApplicationViewModel.TypeOfDeliveries = await StaticDataHandler.GetTypesOfDelivery(BaseUrl);
+                     selfSubscriptionApplicationViewModel.Regions = await StaticDataHandler.GetRegions(BaseUrl);
+                    selfSubscriptionApplicationViewModel.Districts = await StaticDataHandler.GetDistricts(BaseUrl);
 
-                    return View(subscriptionViewModel);
+                    selfSubscriptionApplicationViewModel.PaymentTypes = await StaticDataHandler.GetPaymentTypes(BaseUrl);
+                    return View(selfSubscriptionApplicationViewModel);
                 }
             }
         }
         public async Task<IActionResult> Delete(int id)
         {
             OutputHandler resultHandler = new();
-            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?subscriptionId={id}";
+            var requestUrl = $"{BaseUrl}{apiUrl}/Delete?SelfSubscriptionId={id}";
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(requestUrl);
